@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Build;
 import android.util.Log;
 
+import com.crysoft.me.tobias.adapters.CartAdapter;
 import com.crysoft.me.tobias.helpers.Utils;
 import com.crysoft.me.tobias.models.ProductsModel;
 
@@ -256,6 +257,8 @@ public class DBAdapter extends SQLiteOpenHelper {
         String delSQLString = "DELETE FROM " + TABLE_SHOPPING_CART + " WHERE " + KEY_PRODUCT_ID + "='" + objectId + "';";
         db.execSQL(delSQLString);
         db.close();
+        //Log.i("Delete","Delete Called");
+        //cartAdapter.notifyDataSetChanged();
         return true;
     }
     //Add to Wishlist

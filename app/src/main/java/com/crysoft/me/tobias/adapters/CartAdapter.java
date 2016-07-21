@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.crysoft.me.tobias.R;
@@ -48,6 +49,10 @@ public class CartAdapter extends BaseAdapter{
         return 0;
     }
 
+    public void swapItems(List<ProductsModel> items) {
+        this.productList = items;
+        notifyDataSetChanged();
+    }
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder viewHolder;
@@ -68,7 +73,7 @@ public class CartAdapter extends BaseAdapter{
         }
 
         ProductsModel productDetails = productList.get(position);
-        viewHolder.productPrice.setOnClickListener(new CartOverflowSelectedListener(myContext, productDetails));
+        viewHolder.overflowMenu.setOnClickListener(new CartOverflowSelectedListener(myContext, productDetails));
 
 
         viewHolder.productName.setText(productDetails.getProductName().substring(0,20)+"...");

@@ -74,7 +74,7 @@ public class CartFragment extends Fragment {
         emptyView = (LinearLayout) getActivity().findViewById(R.id.emptyCartList);
         llTotals = (LinearLayout) getActivity().findViewById(R.id.lltotals);
 
-
+        checkoutBTn = (Button) getActivity().findViewById(R.id.btnCheckout);
         subTotal = (TextView) getActivity().findViewById(R.id.subTotal);
         total = (TextView) getActivity().findViewById(R.id.tvTotal);
         cartTitle = (TextView) getActivity().findViewById(R.id.cartTitle);
@@ -90,6 +90,8 @@ public class CartFragment extends Fragment {
             listView.setVisibility(View.GONE);
             cartTitle.setVisibility(View.GONE);
             llTotals.setVisibility(View.GONE);
+            checkoutBTn.setVisibility(View.GONE);
+
             Log.i("List is", "Empty");
         } else {
 
@@ -102,7 +104,7 @@ public class CartFragment extends Fragment {
             }
 
             listView.setAdapter(cartAdapter);
-            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            /*listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     Intent intent = new Intent(getActivity(), ProductDetailsActivity.class);
@@ -111,7 +113,7 @@ public class CartFragment extends Fragment {
                     startActivity(intent);
                     ((Activity) getActivity()).overridePendingTransition(0, 0);
                 }
-            });
+            });*/
         }
     }
     @Override
@@ -144,7 +146,15 @@ public class CartFragment extends Fragment {
         super.onDetach();
         mListener = null;
     }
-  /**
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        cartAdapter.swapItems(databaseAdapter.getCartItems());
+
+    }
+
+    /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
      * to the activity and potentially other fragments contained in that
