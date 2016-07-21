@@ -1,5 +1,6 @@
 package com.crysoft.me.tobias;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -75,13 +76,25 @@ public class HomeActivity extends AppCompatActivity implements CartFragment.OnFr
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (item.getItemId()) {
+            case R.id.action_search:
+                newSearch();
+                return true;
+            case R.id.action_cart:
+                showCart();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
+
+
+    }
+    public void newSearch(){
+
+    }
+    public void showCart(){
+        Intent i = new Intent(this,CartActivity.class);
+        this.startActivity(i);
     }
 
     @Override

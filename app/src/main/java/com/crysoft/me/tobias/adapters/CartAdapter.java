@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.crysoft.me.tobias.CartActivity;
 import com.crysoft.me.tobias.R;
 import com.crysoft.me.tobias.fragments.CartFragment;
 import com.crysoft.me.tobias.helpers.Constants;
@@ -27,11 +28,13 @@ public class CartAdapter extends BaseAdapter{
     private List<ProductsModel> productList;
     private LayoutInflater layoutInflater;
     private Context myContext;
+    CartAdapter cartAdapter;
 
     public CartAdapter(LayoutInflater layoutInflater, List<ProductsModel> productList, Context context){
         this.layoutInflater = layoutInflater;
         this.productList = productList;
         this.myContext = context;
+        this.cartAdapter = this;
     }
     @Override
     public int getCount() {
@@ -73,7 +76,7 @@ public class CartAdapter extends BaseAdapter{
         }
 
         ProductsModel productDetails = productList.get(position);
-        viewHolder.overflowMenu.setOnClickListener(new CartOverflowSelectedListener(myContext, productDetails));
+        viewHolder.overflowMenu.setOnClickListener(new CartOverflowSelectedListener(myContext, productDetails,cartAdapter,productList));
 
 
         viewHolder.productName.setText(productDetails.getProductName().substring(0,20)+"...");

@@ -252,14 +252,15 @@ public class DBAdapter extends SQLiteOpenHelper {
 
     }
     //Remove Item from Cart
-    public boolean removeFromCart(String objectId){
+    public void removeFromCart(String objectId){
         SQLiteDatabase db = getWritableDatabase();
         String delSQLString = "DELETE FROM " + TABLE_SHOPPING_CART + " WHERE " + KEY_PRODUCT_ID + "='" + objectId + "';";
         db.execSQL(delSQLString);
         db.close();
         //Log.i("Delete","Delete Called");
         //cartAdapter.notifyDataSetChanged();
-        return true;
+
+
     }
     //Add to Wishlist
     public boolean addOrUpdateWishlist(ProductsModel productDetails){

@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -39,6 +40,7 @@ import java.util.List;
 public class CartFragment extends Fragment {
     private CartAdapter cartAdapter;
     private DBAdapter databaseAdapter;
+
     private ListView listView;
     private List<ProductsModel> productList;
     private LinearLayout emptyView;
@@ -150,7 +152,10 @@ public class CartFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        cartAdapter.swapItems(databaseAdapter.getCartItems());
+        productList.clear();
+        productList.addAll(databaseAdapter.getCartItems());
+
+       // cartAdapter.swapItems(databaseAdapter.getCartItems());
 
     }
 
@@ -168,4 +173,12 @@ public class CartFragment extends Fragment {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
+
+    public final void deleteFromCart(String objectId){
+        databaseAdapter.removeFromCart(objectId);
+        cartAdapter.notifyDataSetChanged();
+        onResume();
+
+    }
+
 }

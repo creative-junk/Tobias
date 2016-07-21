@@ -5,4 +5,6 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_products">ProductsActivity</string>
     <string name="title_activity_product_details">Item Description</string>
+    <string name="title_activity_cart">Shopping Cart</string>
+    <string name="title_activity_wishlist">WishlistActivity</string>
 </resources>
