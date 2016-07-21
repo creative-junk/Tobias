@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.crysoft.me.tobias.ProductDetailsActivity"
+    tools:showIn="@layout/activity_product_details">
+    <LinearLayout
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:paddingTop="@dimen/activity_vertical_margin"
+        android:id="@+id/productDetails"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+
+        android:background="@android:color/white">
+        <TextView
+            android:id="@+id/tvProductTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Product Name"
+            android:textColor="@android:color/black"/>
+        <ImageView
+            android:id="@+id/ivProductImage"
+            android:layout_width="match_parent"
+            android:layout_height="400dp"
+            android:src="@drawable/com_parse_ui_app_logo"/>
+        <TextView
+            android:id="@+id/tvProductPrice"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Price"
+            android:textSize="14dp"
+            android:textColor="@android:color/black"
+            android:padding="4dp"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Description"
+            android:height="30dp"
+            android:background="#ebebeb"
+            android:gravity="center_vertical"
+            android:textAllCaps="true"/>
+        <TextView
+            android:id="@+id/tvProductDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+<TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/colorAccent">
+        <ImageView
+            android:id="@+id/ivAddToFav"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:src="@drawable/ic_fav"
+            android:layout_gravity="center_vertical"
+            />
+    <Button
+        android:id="@+id/btAddToCart"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:text="Add to Cart"
+        android:textColor="@android:color/white"
+        android:background="@color/colorPrimaryDark"></Button>
+    </LinearLayout>
+</RelativeLayout>

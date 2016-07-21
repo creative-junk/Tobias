@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".HomeActivity">
+    <item
+        android:id="@+id/action_search"
+        android:icon="@drawable/ic_search"
+        android:title="Search"
+        app:showAsAction="collapseActionView|ifRoom"
+        app:actionViewClass="android.support.v7.widget.SearchView"/>
+
+    <item
+        android:id="@+id/action_signin"
+        android:title="Sign in"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/mnSaved"
+        android:icon="@drawable/ic_fav_dark"
+        android:title="Saved Items"
+        app:showAsAction="never|withText" />
+    <item
+        android:id="@+id/action_settings"
+
+        android:title="My Account"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/mnOrders"
+
+        android:title="My Orders"
+        app:showAsAction="never" />
+
+</menu>
