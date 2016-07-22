@@ -10,13 +10,7 @@
         android:layout_height="46dp"
         android:title="Search"
         app:showAsAction="always"/>
-    <item
-        android:id="@+id/action_fav"
-        android:icon="@drawable/ic_fav"
-        android:layout_width="46dp"
-        android:layout_height="46dp"
-        android:title="Wishlist"
-        app:showAsAction="always"/>
+
 
     <item
         android:id="@+id/action_cart"
@@ -26,24 +20,6 @@
         android:title="Cart"
         app:showAsAction="always"/>
 
-    <item
-        android:id="@+id/action_signin"
-        android:title="Sign in"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/mnSaved"
-        android:icon="@drawable/ic_fav_dark"
-        android:title="Saved Items"
-        app:showAsAction="never|withText" />
-    <item
-        android:id="@+id/action_settings"
 
-        android:title="My Account"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/mnOrders"
-
-        android:title="My Orders"
-        app:showAsAction="never" />
 
 </menu>

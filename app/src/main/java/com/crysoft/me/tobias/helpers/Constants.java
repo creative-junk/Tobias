@@ -21,4 +21,7 @@ public class Constants {
     public static final String FOLDER_IMAGE ="Tobias Images";
 
     public static final String CURRENCY = "Ksh ";
+
+    public static int INCREASE_QTY = 1;
+    public static int DECREASE_QTY=2;
 }

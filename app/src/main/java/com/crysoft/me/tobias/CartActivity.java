@@ -22,6 +22,7 @@ import android.widget.TextView;
 import com.crysoft.me.tobias.adapters.CartAdapter;
 import com.crysoft.me.tobias.database.DBAdapter;
 import com.crysoft.me.tobias.listeners.CartOverflowSelectedListener;
+import com.crysoft.me.tobias.listeners.CartQtyButtonListener;
 import com.crysoft.me.tobias.models.ProductsModel;
 
 import java.util.List;
@@ -52,6 +53,7 @@ import java.util.List;
         //Getting a static reference for this class has the potential to cause a Memory Leak so the approach below is used
         //Check http://stackoverflow.com/questions/9723106/get-activity-instance
         CartOverflowSelectedListener.updateActivity(this);
+        CartQtyButtonListener.updateButtonActivity(this);
 
         setContentView(R.layout.activity_cart);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);

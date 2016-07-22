@@ -49,12 +49,15 @@
                             android:text="Qty: "
                             android:textAllCaps="true"/>
                         <Button
+                            android:id="@+id/minusQty"
                             android:background="#f7f7f8"
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:text="-"
                             android:layout_gravity="center"
-                            android:gravity="center"/>
+                            android:gravity="center"
+                            android:focusable="false"
+                            android:focusableInTouchMode="false"/>
 
                         <EditText
                             android:id="@+id/etQty"
@@ -66,10 +69,13 @@
                             android:background="#ffffff"/>
 
                         <Button
+                            android:id="@+id/addQty"
                             android:background="#f7f7f8"
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:layout_gravity="center"
+                            android:focusable="false"
+                            android:focusableInTouchMode="false"
                             android:text="+" />
                     </LinearLayout>
                     <LinearLayout

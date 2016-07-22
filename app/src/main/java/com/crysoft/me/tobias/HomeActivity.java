@@ -3,10 +3,12 @@ package com.crysoft.me.tobias;
 import android.content.Intent;
 import android.content.res.TypedArray;
 import android.net.Uri;
+import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -28,7 +30,7 @@ import com.crysoft.me.tobias.models.NavDrawerItem;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HomeActivity extends AppCompatActivity implements CartFragment.OnFragmentInteractionListener, CategoryFragment.OnFragmentInteractionListener, DiscoverFragment.OnFragmentInteractionListener, FavouriteFragment.OnFragmentInteractionListener, SearchFragment.OnFragmentInteractionListener {
+public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,CartFragment.OnFragmentInteractionListener, CategoryFragment.OnFragmentInteractionListener, DiscoverFragment.OnFragmentInteractionListener, FavouriteFragment.OnFragmentInteractionListener, SearchFragment.OnFragmentInteractionListener {
     private Toolbar mToolBar;
     private ViewPager viewPager;
     private TabLayout tabLayout;
@@ -53,21 +55,36 @@ public class HomeActivity extends AppCompatActivity implements CartFragment.OnFr
         tabLayout.setupWithViewPager(viewPager);
         setupTabs();
 
-    }
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, mToolBar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
 
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+        navigationView.setItemIconTintList(null);
+
+    }
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
     private void setupTabs() {
-        tabLayout.getTabAt(0).setIcon(tabIcons[0]);
-       /* tabLayout.getTabAt(1).setIcon(tabIcons[1]);
-        tabLayout.getTabAt(2).setIcon(tabIcons[2]);*/
-        tabLayout.getTabAt(1).setIcon(tabIcons[1]);
-        tabLayout.getTabAt(2).setIcon(tabIcons[2]);
+      //  tabLayout.getTabAt(0).setIcon(tabIcons[0]);
+       //tabLayout.getTabAt(1).setIcon(tabIcons[1]);
+
     }
 
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(new DiscoverFragment(),"Home");
-        adapter.addFragment(new FavouriteFragment(),"Saved");
-        adapter.addFragment(new CartFragment(),"Cart");
+        adapter.addFragment(new DiscoverFragment(),"Browse");
+        adapter.addFragment(new SearchFragment(),"Search");
         viewPager.setAdapter(adapter);
     }
 
@@ -105,6 +122,30 @@ public class HomeActivity extends AppCompatActivity implements CartFragment.OnFr
     @Override
     public void onFragmentInteraction(Uri uri) {
 
+    }
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+        if (id == R.id.nav_camera) {
+            // Handle the camera action
+        } else if (id == R.id.nav_gallery) {
+
+        } else if (id == R.id.nav_slideshow) {
+
+        } else if (id == R.id.nav_manage) {
+
+        } else if (id == R.id.nav_share) {
+
+        } else if (id == R.id.nav_send) {
+
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
     }
 
     class ViewPagerAdapter extends FragmentPagerAdapter {

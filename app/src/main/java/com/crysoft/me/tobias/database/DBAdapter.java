@@ -9,6 +9,7 @@ import android.os.Build;
 import android.util.Log;
 
 import com.crysoft.me.tobias.adapters.CartAdapter;
+import com.crysoft.me.tobias.helpers.Constants;
 import com.crysoft.me.tobias.helpers.Utils;
 import com.crysoft.me.tobias.models.ProductsModel;
 
@@ -128,7 +129,7 @@ public class DBAdapter extends SQLiteOpenHelper {
     public boolean insertOrUpdateCart(ProductsModel productDetails) {
         long productId = -1;
         SQLiteDatabase db = getWritableDatabase();
-        Boolean transactionSuccessful=false;
+        Boolean transactionSuccessful = false;
 
         //Let's wrap the operation in a transaction for Performance and Consistency
         db.beginTransaction();
@@ -138,7 +139,7 @@ public class DBAdapter extends SQLiteOpenHelper {
             //Let's check if the user exists and get the quantity in the process
             if (getProductQty(productDetails.getObjectId()) > 0) {
                 int quantity = getProductQty(productDetails.getObjectId());
-                Log.i("Current QTY",String.valueOf(quantity));
+                Log.i("Current QTY", String.valueOf(quantity));
                 int newQuantity = ++quantity;
 
                 ContentValues values = new ContentValues();
@@ -151,11 +152,11 @@ public class DBAdapter extends SQLiteOpenHelper {
                 values.put(KEY_CART_STATUS, productDetails.getCartStatus());
                 //Product Exists, update its quantity
                 values.put(KEY_PRODUCT_QUANTITY, newQuantity);
-                Log.i("New Qty",String.valueOf(newQuantity));
-                int rows=db.update(TABLE_SHOPPING_CART, values, KEY_PRODUCT_ID + "=?", new String[]{productDetails.getObjectId()});
+                Log.i("New Qty", String.valueOf(newQuantity));
+                int rows = db.update(TABLE_SHOPPING_CART, values, KEY_PRODUCT_ID + "=?", new String[]{productDetails.getObjectId()});
                 //int rows = db.update(TABLE_SHOPPING_CART,values,KEY_PRODUCT_ID+ "='"+productDetails.getObjectId()+"'",null);
                 db.setTransactionSuccessful();
-                transactionSuccessful=true;
+                transactionSuccessful = true;
             } else {
                 //It's a new Product, Insert it
                 ContentValues values = new ContentValues();
@@ -166,17 +167,17 @@ public class DBAdapter extends SQLiteOpenHelper {
                 values.put(KEY_PRODUCT_DESCRIPTION, productDetails.getDescription());
                 values.put(KEY_PRODUCT_STATUS, productDetails.getProductStatus());
                 values.put(KEY_CART_STATUS, productDetails.getCartStatus());
-                values.put(KEY_PRODUCT_QUANTITY, "2");
+                values.put(KEY_PRODUCT_QUANTITY, "1");
                 db.insertOrThrow(TABLE_SHOPPING_CART, null, values);
                 db.setTransactionSuccessful();
-                transactionSuccessful=true;
+                transactionSuccessful = true;
             }
 
         } catch (Exception e) {
             Log.d(TAG, "Error Updating Shopping Cart-InsertOrUpdate");
-            Log.i("Error:",e.getMessage());
+            Log.i("Error:", e.getMessage());
             e.printStackTrace();
-            transactionSuccessful=false;
+            transactionSuccessful = false;
         } finally {
             db.endTransaction();
         }
@@ -192,7 +193,7 @@ public class DBAdapter extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery(userSelectQuery, new String[]{objectId});
         */
         Cursor cursor = db.rawQuery(
-                "SELECT " + KEY_PRODUCT_QUANTITY + " FROM "+TABLE_SHOPPING_CART +" WHERE "+KEY_PRODUCT_ID +"=?",new String[] {objectId}
+                "SELECT " + KEY_PRODUCT_QUANTITY + " FROM " + TABLE_SHOPPING_CART + " WHERE " + KEY_PRODUCT_ID + "=?", new String[]{objectId}
         );
 
         if (cursor.moveToFirst()) {
@@ -206,17 +207,38 @@ public class DBAdapter extends SQLiteOpenHelper {
         return quantity;
 
     }
+
+    public void updateQuantity(String objectId, int operation) {
+        SQLiteDatabase db = getWritableDatabase();
+        String operationMode = "+";
+        if (operation == Constants.INCREASE_QTY) {
+            operationMode = "+";
+        } else {
+            operationMode = "-";
+        }
+        String rawQuery="UPDATE " + TABLE_SHOPPING_CART + " SET " + KEY_PRODUCT_QUANTITY + " = " + KEY_PRODUCT_QUANTITY + " " + operationMode + " "+ 1 + " WHERE " + KEY_PRODUCT_ID + " = '" + objectId + "'";
+        Log.i("Query is",rawQuery);
+
+        Cursor c = db.rawQuery(rawQuery,null);
+        if(c.moveToFirst())
+        {
+            Log.i("Result: ","Succeded");
+        }else{
+            Log.i("Result: ","Failed");
+        }
+    }
+
     //Get Cart Items
-    public List<ProductsModel> getCartItems(){
+    public List<ProductsModel> getCartItems() {
         List<ProductsModel> productList = new ArrayList<ProductsModel>();
         SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.query(TABLE_SHOPPING_CART,new String[]{
-                KEY_CART_ID,KEY_PRODUCT_ID,KEY_PRODUCT_NAME,KEY_PRODUCT_PRICE,KEY_PRODUCT_IMAGE,KEY_PRODUCT_DESCRIPTION,KEY_PRODUCT_QUANTITY,KEY_PRODUCT_STATUS,KEY_CART_STATUS
-        },null,null,null,null,null);
-        try{
-            if (cursor.moveToFirst()){
+        Cursor cursor = db.query(TABLE_SHOPPING_CART, new String[]{
+                KEY_CART_ID, KEY_PRODUCT_ID, KEY_PRODUCT_NAME, KEY_PRODUCT_PRICE, KEY_PRODUCT_IMAGE, KEY_PRODUCT_DESCRIPTION, KEY_PRODUCT_QUANTITY, KEY_PRODUCT_STATUS, KEY_CART_STATUS
+        }, null, null, null, null, null);
+        try {
+            if (cursor.moveToFirst()) {
                 do {
-                    ProductsModel productDetails= new ProductsModel();
+                    ProductsModel productDetails = new ProductsModel();
                     productDetails.setObjectId(cursor.getString(1));
                     productDetails.setProductName(cursor.getString(2));
                     productDetails.setProductPrice(cursor.getString(3));
@@ -226,73 +248,76 @@ public class DBAdapter extends SQLiteOpenHelper {
 
                     productDetails.setProductStatus(cursor.getString(7));
                     productDetails.setCartStatus(cursor.getString(8));
-                    Log.i("Qty",String.valueOf(cursor.getInt(6)));
+                    Log.i("Qty", String.valueOf(cursor.getInt(6)));
                     productList.add(productDetails);
-                }while (cursor.moveToNext());
+                } while (cursor.moveToNext());
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             Log.d(TAG, "Error Retrieving Cart Items");
-        }finally {
-            if (cursor!=null){
+        } finally {
+            if (cursor != null) {
                 cursor.close();
             }
         }
         return productList;
 
     }
+
     //Get Cart Total
-    public String getCartAmount(){
-        int amount=0;
+    public String getCartAmount() {
+        int amount = 0;
 
 
         SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.query(TABLE_SHOPPING_CART,new String[]{
-                KEY_CART_ID,KEY_PRODUCT_ID,KEY_PRODUCT_NAME,KEY_PRODUCT_PRICE,KEY_PRODUCT_IMAGE,KEY_PRODUCT_DESCRIPTION,KEY_PRODUCT_QUANTITY,KEY_PRODUCT_STATUS,KEY_CART_STATUS
-        },null,null,null,null,null);
-        try{
-            if (cursor.moveToFirst()){
+        Cursor cursor = db.query(TABLE_SHOPPING_CART, new String[]{
+                KEY_CART_ID, KEY_PRODUCT_ID, KEY_PRODUCT_NAME, KEY_PRODUCT_PRICE, KEY_PRODUCT_IMAGE, KEY_PRODUCT_DESCRIPTION, KEY_PRODUCT_QUANTITY, KEY_PRODUCT_STATUS, KEY_CART_STATUS
+        }, null, null, null, null, null);
+        try {
+            if (cursor.moveToFirst()) {
                 do {
-                    amount = amount +Integer.valueOf(cursor.getString(3));
+                    amount = amount + Integer.valueOf(cursor.getString(3));
                     amount = amount * Integer.valueOf(cursor.getString(6));
-                }while (cursor.moveToNext());
+                } while (cursor.moveToNext());
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             Log.d(TAG, "Error Retrieving Cart Items");
-        }finally {
-            if (cursor!=null){
+        } finally {
+            if (cursor != null) {
                 cursor.close();
             }
         }
         return Utils.formatPrice(amount);
 
     }
+
     //Get Number of Items in Cart
-    public int getNumberOfItems(){
-        int nrItems=0;
+    public int getNumberOfItems() {
+        int nrItems = 0;
 
 
         SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.query(TABLE_SHOPPING_CART,new String[]{
-                KEY_CART_ID,KEY_PRODUCT_ID,KEY_PRODUCT_NAME,KEY_PRODUCT_PRICE,KEY_PRODUCT_IMAGE,KEY_PRODUCT_DESCRIPTION,KEY_PRODUCT_QUANTITY,KEY_PRODUCT_STATUS,KEY_CART_STATUS
-        },null,null,null,null,null);
-        try{
-            if (cursor.moveToFirst()){
+        Cursor cursor = db.query(TABLE_SHOPPING_CART, new String[]{
+                KEY_CART_ID, KEY_PRODUCT_ID, KEY_PRODUCT_NAME, KEY_PRODUCT_PRICE, KEY_PRODUCT_IMAGE, KEY_PRODUCT_DESCRIPTION, KEY_PRODUCT_QUANTITY, KEY_PRODUCT_STATUS, KEY_CART_STATUS
+        }, null, null, null, null, null);
+        try {
+            if (cursor.moveToFirst()) {
                 do {
-                    nrItems = nrItems +Integer.valueOf(cursor.getString(6));
-                }while (cursor.moveToNext());
+                    nrItems = nrItems + Integer.valueOf(cursor.getString(6));
+                } while (cursor.moveToNext());
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             Log.d(TAG, "Error Retrieving Cart Items");
-        }finally {
-            if (cursor!=null){
+        } finally {
+            if (cursor != null) {
                 cursor.close();
             }
         }
         return nrItems;
 
     }
+
     //Remove Item from Cart
-    public void removeFromCart(String objectId){
+    public void removeFromCart(String objectId) {
         SQLiteDatabase db = getWritableDatabase();
         String delSQLString = "DELETE FROM " + TABLE_SHOPPING_CART + " WHERE " + KEY_PRODUCT_ID + "='" + objectId + "';";
         db.execSQL(delSQLString);
@@ -302,15 +327,16 @@ public class DBAdapter extends SQLiteOpenHelper {
 
 
     }
+
     //Add to Wishlist
-    public boolean addOrUpdateWishlist(ProductsModel productDetails){
+    public boolean addOrUpdateWishlist(ProductsModel productDetails) {
         //Use the Cached Connection
         SQLiteDatabase db = getWritableDatabase();
-        Boolean transactionSuccessful=false;
+        Boolean transactionSuccessful = false;
 
         //As usual Wrap it in a transaction
         db.beginTransaction();
-        try{
+        try {
             ContentValues values = new ContentValues();
             values.put(KEY_FAV_PRODUCT_ID, productDetails.getObjectId());
             values.put(KEY_FAV_PRODUCT_NAME, productDetails.getProductName());
@@ -321,40 +347,41 @@ public class DBAdapter extends SQLiteOpenHelper {
             values.put(KEY_FAV_STATUS, productDetails.getFavStatus());
 
             //Let's try to update the Saved Product if it exists.
-            int rows = db.update(TABLE_FAVOURITES,values,KEY_FAV_PRODUCT_ID + "= ?",new String[]{productDetails.getObjectId()});
+            int rows = db.update(TABLE_FAVOURITES, values, KEY_FAV_PRODUCT_ID + "= ?", new String[]{productDetails.getObjectId()});
 
             //Let's check if the update worked
-            if (rows==1){
+            if (rows == 1) {
                 //Ok, we have updated a Saved Product, we could probably get the Product updated at this point if we needed to
                 db.setTransactionSuccessful();
-                transactionSuccessful=true;
+                transactionSuccessful = true;
 
-            }else{
+            } else {
                 //No Such Product Here, insert it
-                db.insertOrThrow(TABLE_FAVOURITES,null,values);
+                db.insertOrThrow(TABLE_FAVOURITES, null, values);
                 db.setTransactionSuccessful();
-                transactionSuccessful=true;
+                transactionSuccessful = true;
             }
-        }catch (Exception e){
-            Log.d(TAG,"Error trying to Update Wishlist");
-            transactionSuccessful=false;
-        }finally {
+        } catch (Exception e) {
+            Log.d(TAG, "Error trying to Update Wishlist");
+            transactionSuccessful = false;
+        } finally {
             db.endTransaction();
         }
         return transactionSuccessful;
 
     }
+
     //Get Wishlist Items
-    public List<ProductsModel> getWishlist(){
+    public List<ProductsModel> getWishlist() {
         List<ProductsModel> productList = new ArrayList<ProductsModel>();
         SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.query(TABLE_FAVOURITES,new String[]{
-                KEY_FAVOURITES_ID,KEY_FAV_PRODUCT_ID,KEY_FAV_PRODUCT_NAME,KEY_FAV_PRODUCT_PRICE,KEY_FAV_PRODUCT_IMAGE,KEY_FAV_PRODUCT_DESCRIPTION,KEY_FAV_PRODUCT_QUANTITY,KEY_FAV_PRODUCT_STATUS,KEY_FAV_STATUS
-        },null,null,null,null,null);
-        try{
-            if (cursor.moveToFirst()){
+        Cursor cursor = db.query(TABLE_FAVOURITES, new String[]{
+                KEY_FAVOURITES_ID, KEY_FAV_PRODUCT_ID, KEY_FAV_PRODUCT_NAME, KEY_FAV_PRODUCT_PRICE, KEY_FAV_PRODUCT_IMAGE, KEY_FAV_PRODUCT_DESCRIPTION, KEY_FAV_PRODUCT_QUANTITY, KEY_FAV_PRODUCT_STATUS, KEY_FAV_STATUS
+        }, null, null, null, null, null);
+        try {
+            if (cursor.moveToFirst()) {
                 do {
-                    ProductsModel productDetails= new ProductsModel();
+                    ProductsModel productDetails = new ProductsModel();
                     productDetails.setObjectId(cursor.getString(1));
                     productDetails.setProductName(cursor.getString(2));
                     productDetails.setProductPrice(cursor.getString(3));
@@ -364,20 +391,21 @@ public class DBAdapter extends SQLiteOpenHelper {
                     productDetails.setProductStatus(cursor.getString(7));
                     productDetails.setFavStatus(cursor.getString(8));
                     productList.add(productDetails);
-                }while (cursor.moveToNext());
+                } while (cursor.moveToNext());
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             Log.d(TAG, "Error Retrieving Wishlist Items");
-        }finally {
-            if (cursor!=null){
+        } finally {
+            if (cursor != null) {
                 cursor.close();
             }
         }
         return productList;
 
     }
+
     //remove Item from Wishlist
-    private boolean removeFromWishlist(String objectId){
+    private boolean removeFromWishlist(String objectId) {
         SQLiteDatabase db = getWritableDatabase();
         String delSQLString = "DELETE FROM " + TABLE_FAVOURITES + " WHERE " + KEY_FAV_PRODUCT_ID + "=" + objectId + ";";
         db.execSQL(delSQLString);

@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -17,6 +18,7 @@ import com.crysoft.me.tobias.fragments.CartFragment;
 import com.crysoft.me.tobias.helpers.Constants;
 import com.crysoft.me.tobias.helpers.Utils;
 import com.crysoft.me.tobias.listeners.CartOverflowSelectedListener;
+import com.crysoft.me.tobias.listeners.CartQtyButtonListener;
 import com.crysoft.me.tobias.models.ProductsModel;
 import com.squareup.picasso.Picasso;
 
@@ -71,6 +73,8 @@ public class CartAdapter extends BaseAdapter{
             viewHolder.productPrice = (TextView) convertView.findViewById(R.id.tvCartItemPrice);
             viewHolder.overflowMenu = (ImageView) convertView.findViewById(R.id.ivCartOverflow);
             viewHolder.cartQty = (EditText) convertView.findViewById(R.id.etQty);
+            viewHolder.addQty = (Button) convertView.findViewById(R.id.addQty);
+            viewHolder.minusQty = (Button) convertView.findViewById(R.id.minusQty);
             //viewHolder.productDescription = (TextView) convertView.findViewById(R.id.tvItemDescription);
 
             convertView.setTag(viewHolder);
@@ -80,7 +84,10 @@ public class CartAdapter extends BaseAdapter{
 
         ProductsModel productDetails = productList.get(position);
         viewHolder.overflowMenu.setOnClickListener(new CartOverflowSelectedListener(myContext, productDetails,cartAdapter,productList));
-
+        viewHolder.addQty.setOnClickListener(new CartQtyButtonListener(myContext,productDetails,cartAdapter,productList,Constants.INCREASE_QTY));
+        if (Integer.valueOf(productDetails.getQuantity()) > 1){
+            viewHolder.minusQty.setOnClickListener(new CartQtyButtonListener(myContext,productDetails,cartAdapter,productList,Constants.DECREASE_QTY));
+        }
 
         viewHolder.productName.setText(productDetails.getProductName().substring(0,20)+"...");
         viewHolder.productPrice.setText(Utils.formatPrice(Integer.valueOf(productDetails.getProductPrice())));
@@ -101,6 +108,8 @@ public class CartAdapter extends BaseAdapter{
         TextView productPrice;
         TextView productDescription;
         EditText cartQty;
+        Button minusQty;
+        Button addQty;
         ImageView overflowMenu;
 
 
