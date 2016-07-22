@@ -22,6 +22,7 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.crysoft.me.tobias.CartActivity;
 import com.crysoft.me.tobias.ProductDetailsActivity;
 import com.crysoft.me.tobias.R;
 import com.crysoft.me.tobias.adapters.CartAdapter;
@@ -96,6 +97,8 @@ public class CartFragment extends Fragment {
 
             Log.i("List is", "Empty");
         } else {
+
+            //cartAdapter = new CartAdapter(getActivity().getLayoutInflater(), productList, getActivity());
 
             cartAdapter = new CartAdapter(getActivity().getLayoutInflater(), productList, getActivity());
 

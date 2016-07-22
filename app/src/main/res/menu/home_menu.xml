@@ -6,17 +6,23 @@
     <item
         android:id="@+id/action_search"
         android:icon="@drawable/ic_search"
+        android:layout_width="46dp"
+        android:layout_height="46dp"
         android:title="Search"
         app:showAsAction="always"/>
     <item
         android:id="@+id/action_fav"
         android:icon="@drawable/ic_fav"
+        android:layout_width="46dp"
+        android:layout_height="46dp"
         android:title="Wishlist"
         app:showAsAction="always"/>
 
     <item
         android:id="@+id/action_cart"
         android:icon="@drawable/ic_cart"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
         android:title="Cart"
         app:showAsAction="always"/>
 

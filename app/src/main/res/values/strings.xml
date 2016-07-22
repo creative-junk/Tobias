@@ -7,4 +7,19 @@
     <string name="title_activity_product_details">Item Description</string>
     <string name="title_activity_cart">Shopping Cart</string>
     <string name="title_activity_wishlist">WishlistActivity</string>
+    <!-- Nav Drawer Menu Items -->
+    <string-array name="nav_drawer_items">
+        <item>Home</item>
+        <item>Favourites</item>
+        <item>Shopping Cart</item>
+        <item>Your Orders</item>
+        <item>Your Account</item>
+
+    </string-array>
+    <string name="title_activity_main">MainActivity</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
 </resources>

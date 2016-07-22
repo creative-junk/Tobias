@@ -133,25 +133,40 @@ public class DBAdapter extends SQLiteOpenHelper {
         //Let's wrap the operation in a transaction for Performance and Consistency
         db.beginTransaction();
         try {
-            ContentValues values = new ContentValues();
-            values.put(KEY_PRODUCT_ID, productDetails.getObjectId());
-            values.put(KEY_PRODUCT_NAME, productDetails.getProductName());
-            values.put(KEY_PRODUCT_PRICE, productDetails.getProductPrice());
-            values.put(KEY_PRODUCT_IMAGE, productDetails.getImageFile());
-            values.put(KEY_PRODUCT_DESCRIPTION, productDetails.getDescription());
-            values.put(KEY_PRODUCT_STATUS, productDetails.getProductStatus());
-            values.put(KEY_CART_STATUS, productDetails.getCartStatus());
+
 
             //Let's check if the user exists and get the quantity in the process
             if (getProductQty(productDetails.getObjectId()) > 0) {
-                int quantity = Integer.valueOf(productDetails.getQuantity()) + getProductQty(productDetails.getObjectId());
+                int quantity = getProductQty(productDetails.getObjectId());
+                Log.i("Current QTY",String.valueOf(quantity));
+                int newQuantity = ++quantity;
+
+                ContentValues values = new ContentValues();
+                values.put(KEY_PRODUCT_ID, productDetails.getObjectId());
+                values.put(KEY_PRODUCT_NAME, productDetails.getProductName());
+                values.put(KEY_PRODUCT_PRICE, productDetails.getProductPrice());
+                values.put(KEY_PRODUCT_IMAGE, productDetails.getImageFile());
+                values.put(KEY_PRODUCT_DESCRIPTION, productDetails.getDescription());
+                values.put(KEY_PRODUCT_STATUS, productDetails.getProductStatus());
+                values.put(KEY_CART_STATUS, productDetails.getCartStatus());
                 //Product Exists, update its quantity
-                values.put(KEY_PRODUCT_QUANTITY, quantity);
-                db.update(TABLE_SHOPPING_CART, values, KEY_PRODUCT_ID + "=?", new String[]{productDetails.getObjectId()});
+                values.put(KEY_PRODUCT_QUANTITY, newQuantity);
+                Log.i("New Qty",String.valueOf(newQuantity));
+                int rows=db.update(TABLE_SHOPPING_CART, values, KEY_PRODUCT_ID + "=?", new String[]{productDetails.getObjectId()});
+                //int rows = db.update(TABLE_SHOPPING_CART,values,KEY_PRODUCT_ID+ "='"+productDetails.getObjectId()+"'",null);
+                db.setTransactionSuccessful();
                 transactionSuccessful=true;
             } else {
                 //It's a new Product, Insert it
-                values.put(KEY_PRODUCT_QUANTITY, Integer.valueOf(productDetails.getQuantity()));
+                ContentValues values = new ContentValues();
+                values.put(KEY_PRODUCT_ID, productDetails.getObjectId());
+                values.put(KEY_PRODUCT_NAME, productDetails.getProductName());
+                values.put(KEY_PRODUCT_PRICE, productDetails.getProductPrice());
+                values.put(KEY_PRODUCT_IMAGE, productDetails.getImageFile());
+                values.put(KEY_PRODUCT_DESCRIPTION, productDetails.getDescription());
+                values.put(KEY_PRODUCT_STATUS, productDetails.getProductStatus());
+                values.put(KEY_CART_STATUS, productDetails.getCartStatus());
+                values.put(KEY_PRODUCT_QUANTITY, "2");
                 db.insertOrThrow(TABLE_SHOPPING_CART, null, values);
                 db.setTransactionSuccessful();
                 transactionSuccessful=true;
@@ -181,13 +196,11 @@ public class DBAdapter extends SQLiteOpenHelper {
         );
 
         if (cursor.moveToFirst()) {
-            if (cursor.getInt(0) <= 0){
-                quantity=1;
-            }else {
-                quantity = cursor.getInt(0);
-            }
+
+            quantity = cursor.getInt(0);
+            Log.i("Gotten Qty", String.valueOf(cursor.getInt(0)));
             cursor.close();
-            return quantity;
+
 
         }
         return quantity;
@@ -209,9 +222,11 @@ public class DBAdapter extends SQLiteOpenHelper {
                     productDetails.setProductPrice(cursor.getString(3));
                     productDetails.setImageFile(cursor.getString(4));
                     productDetails.setDescription(cursor.getString(5));
-                    productDetails.setQuantity(cursor.getString(6));
+                    productDetails.setQuantity(String.valueOf(cursor.getInt(6)));
+
                     productDetails.setProductStatus(cursor.getString(7));
                     productDetails.setCartStatus(cursor.getString(8));
+                    Log.i("Qty",String.valueOf(cursor.getInt(6)));
                     productList.add(productDetails);
                 }while (cursor.moveToNext());
             }
@@ -238,7 +253,7 @@ public class DBAdapter extends SQLiteOpenHelper {
             if (cursor.moveToFirst()){
                 do {
                     amount = amount +Integer.valueOf(cursor.getString(3));
-
+                    amount = amount * Integer.valueOf(cursor.getString(6));
                 }while (cursor.moveToNext());
             }
         }catch (Exception e){
@@ -249,6 +264,31 @@ public class DBAdapter extends SQLiteOpenHelper {
             }
         }
         return Utils.formatPrice(amount);
+
+    }
+    //Get Number of Items in Cart
+    public int getNumberOfItems(){
+        int nrItems=0;
+
+
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.query(TABLE_SHOPPING_CART,new String[]{
+                KEY_CART_ID,KEY_PRODUCT_ID,KEY_PRODUCT_NAME,KEY_PRODUCT_PRICE,KEY_PRODUCT_IMAGE,KEY_PRODUCT_DESCRIPTION,KEY_PRODUCT_QUANTITY,KEY_PRODUCT_STATUS,KEY_CART_STATUS
+        },null,null,null,null,null);
+        try{
+            if (cursor.moveToFirst()){
+                do {
+                    nrItems = nrItems +Integer.valueOf(cursor.getString(6));
+                }while (cursor.moveToNext());
+            }
+        }catch (Exception e){
+            Log.d(TAG, "Error Retrieving Cart Items");
+        }finally {
+            if (cursor!=null){
+                cursor.close();
+            }
+        }
+        return nrItems;
 
     }
     //Remove Item from Cart

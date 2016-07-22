@@ -1,23 +1,29 @@
 package com.crysoft.me.tobias;
 
 import android.content.Intent;
+import android.content.res.TypedArray;
 import android.net.Uri;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ListView;
 
+import com.crysoft.me.tobias.adapters.DrawerListAdapter;
 import com.crysoft.me.tobias.fragments.CartFragment;
 import com.crysoft.me.tobias.fragments.CategoryFragment;
 import com.crysoft.me.tobias.fragments.DiscoverFragment;
 import com.crysoft.me.tobias.fragments.FavouriteFragment;
 import com.crysoft.me.tobias.fragments.SearchFragment;
+import com.crysoft.me.tobias.models.NavDrawerItem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +52,6 @@ public class HomeActivity extends AppCompatActivity implements CartFragment.OnFr
         tabLayout = (TabLayout) findViewById(R.id.tablayout);
         tabLayout.setupWithViewPager(viewPager);
         setupTabs();
-
 
     }
 

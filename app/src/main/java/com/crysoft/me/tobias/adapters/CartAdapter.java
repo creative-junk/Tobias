@@ -1,5 +1,6 @@
 package com.crysoft.me.tobias.adapters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,7 +29,8 @@ public class CartAdapter extends BaseAdapter{
     private List<ProductsModel> productList;
     private LayoutInflater layoutInflater;
     private Context myContext;
-    CartAdapter cartAdapter;
+    private CartAdapter cartAdapter;
+
 
     public CartAdapter(LayoutInflater layoutInflater, List<ProductsModel> productList, Context context){
         this.layoutInflater = layoutInflater;
@@ -68,6 +70,7 @@ public class CartAdapter extends BaseAdapter{
             viewHolder.productName = (TextView) convertView.findViewById(R.id.tvCartItemName);
             viewHolder.productPrice = (TextView) convertView.findViewById(R.id.tvCartItemPrice);
             viewHolder.overflowMenu = (ImageView) convertView.findViewById(R.id.ivCartOverflow);
+            viewHolder.cartQty = (EditText) convertView.findViewById(R.id.etQty);
             //viewHolder.productDescription = (TextView) convertView.findViewById(R.id.tvItemDescription);
 
             convertView.setTag(viewHolder);
@@ -81,6 +84,7 @@ public class CartAdapter extends BaseAdapter{
 
         viewHolder.productName.setText(productDetails.getProductName().substring(0,20)+"...");
         viewHolder.productPrice.setText(Utils.formatPrice(Integer.valueOf(productDetails.getProductPrice())));
+        viewHolder.cartQty.setText(productDetails.getQuantity());
 
      //   viewHolder.productDescription.setText(productDetails.getDescription());
 

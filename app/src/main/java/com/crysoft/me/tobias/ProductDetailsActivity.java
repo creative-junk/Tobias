@@ -55,7 +55,7 @@ public class ProductDetailsActivity extends AppCompatActivity {
         //Get our Product Model from the Intent
         Intent productIntent = getIntent();
         final ProductsModel productDetails = (ProductsModel) productIntent.getExtras().getParcelable("product_details");
-        productDetails.setQuantity("1");
+        productDetails.setQuantity("2");
         objectId = productDetails.getObjectId();
         imageURL = productDetails.getImageFile();
 

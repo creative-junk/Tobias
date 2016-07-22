@@ -1,5 +1,6 @@
 package com.crysoft.me.tobias;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -13,12 +14,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.crysoft.me.tobias.adapters.CartAdapter;
 import com.crysoft.me.tobias.database.DBAdapter;
+import com.crysoft.me.tobias.listeners.CartOverflowSelectedListener;
 import com.crysoft.me.tobias.models.ProductsModel;
 
 import java.util.List;
@@ -26,6 +29,7 @@ import java.util.List;
  public class CartActivity extends AppCompatActivity {
     public CartAdapter cartAdapter;
     private DBAdapter databaseAdapter;
+    public static CartActivity cartActivity;
 
     private ListView listView;
     public List<ProductsModel> productList;
@@ -34,6 +38,7 @@ import java.util.List;
     private TextView cartTitle;
     private TextView subTotal;
     private TextView total;
+     private EditText etQty;
     private LinearLayout llTotals;
     private Button checkoutBTn;
 
@@ -42,6 +47,12 @@ import java.util.List;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //Get an Instance of this activity for use in the OnCliCk Listener
+        //cartActivity = this;
+        //Getting a static reference for this class has the potential to cause a Memory Leak so the approach below is used
+        //Check http://stackoverflow.com/questions/9723106/get-activity-instance
+        CartOverflowSelectedListener.updateActivity(this);
+
         setContentView(R.layout.activity_cart);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -50,15 +61,20 @@ import java.util.List;
 
         //Setup the DB
         databaseAdapter = DBAdapter.getInstance(this);
+
+
         //Setup the layout
         listView = (ListView) findViewById(R.id.cartList);
         emptyView = (LinearLayout) findViewById(R.id.emptyCartList);
         llTotals = (LinearLayout) findViewById(R.id.lltotals);
+        etQty = (EditText) findViewById(R.id.etQty);
 
         checkoutBTn = (Button) findViewById(R.id.btnCheckout);
         subTotal = (TextView) findViewById(R.id.subTotal);
         total = (TextView) findViewById(R.id.tvTotal);
         cartTitle = (TextView) findViewById(R.id.cartTitle);
+
+
         populateList();
     }
     public void populateList(){
@@ -78,12 +94,13 @@ import java.util.List;
             Log.i("List is", "Empty");
         } else {
 
+
             cartAdapter = new CartAdapter(getLayoutInflater(), productList, this);
 
-            if (cartAdapter.getCount() == 1) {
+            if (databaseAdapter.getNumberOfItems() == 1) {
                 cartTitle.setText("You have 1 item ready in your Shopping Cart");
             } else {
-                cartTitle.setText("You have " + cartAdapter.getCount() + " items ready in your Shopping Cart");
+                cartTitle.setText("You have " + databaseAdapter.getNumberOfItems() + " items ready in your Shopping Cart");
             }
 
             listView.setAdapter(cartAdapter);
