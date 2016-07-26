@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.crysoft.me.tobias.HomeActivity;
@@ -34,6 +35,7 @@ public class DiscoverFragment extends Fragment {
     private ParseQueryAdapter<ParseObject> mainAdapter;
     private CategoryAdapter categoryAdapter;
     private GridView gridView;
+    private RelativeLayout rlLoading;
 
 
     public DiscoverFragment() {
@@ -61,26 +63,24 @@ public class DiscoverFragment extends Fragment {
         //Initialize our subclass of the Parse Query Adapter
         categoryAdapter = new CategoryAdapter(getActivity());
         gridView = (GridView) getActivity().findViewById(R.id.categoryGrid);
+        rlLoading = (RelativeLayout) getActivity().findViewById(R.id.loadingPanel);
 
-
-       /* mainAdapter.addOnQueryLoadListener(new ParseQueryAdapter.OnQueryLoadListener<ParseObject>() {
+       mainAdapter.addOnQueryLoadListener(new ParseQueryAdapter.OnQueryLoadListener<ParseObject>() {
             private ProgressDialog mProgressDialog;
             @Override
             public void onLoading() {
-                mProgressDialog = new ProgressDialog(getActivity());
-                mProgressDialog.setMessage("Loading Shop...");
-                mProgressDialog.setIndeterminate(false);
-                mProgressDialog.show();
-
+                gridView.setVisibility(View.GONE);
+                rlLoading.setVisibility(View.VISIBLE);
             }
 
             @Override
             public void onLoaded(List<ParseObject> objects, Exception e) {
+                gridView.setVisibility(View.VISIBLE);
+                rlLoading.setVisibility(View.GONE);
                 gridView.setAdapter(categoryAdapter);
-                mProgressDialog.dismiss();
             }
-        });*/
-        gridView.setAdapter(categoryAdapter);
+        });
+        //gridView.setAdapter(categoryAdapter);
         mainAdapter.loadObjects();
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

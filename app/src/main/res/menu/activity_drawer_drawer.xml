@@ -8,7 +8,7 @@
             android:title="Home" />
         <item
             android:id="@+id/todaysDeals"
-            android:icon="@drawable/ic_menu_gallery"
+            android:icon="@drawable/ic_deals"
             android:title="Today's Deals" />
 
         <item
@@ -17,7 +17,7 @@
             android:title="Your Wishlist" />
         <item
             android:id="@+id/yourOrders"
-            android:icon="@drawable/ic_menu_slideshow"
+            android:icon="@drawable/ic_orders"
             android:title="Your Orders" />
         <item
             android:id="@+id/yourAccount"
@@ -33,7 +33,7 @@
                 android:title="Customer Service" />
             <item
                 android:id="@+id/signIn"
-                android:icon="@drawable/ic_menu_send"
+                android:icon="@drawable/ic_lock_open"
                 android:title="Hello. Sign In" />
         </menu>
     </item>

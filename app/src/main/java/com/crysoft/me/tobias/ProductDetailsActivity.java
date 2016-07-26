@@ -1,12 +1,15 @@
 package com.crysoft.me.tobias;
 
 import android.app.ProgressDialog;
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -121,7 +124,11 @@ public class ProductDetailsActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main_menu,menu);
+        getMenuInflater().inflate(R.menu.home_menu,menu);
+        //Associte the Searchable Configuration with the SearchView
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         return true;
     }
 
@@ -131,6 +138,20 @@ public class ProductDetailsActivity extends AppCompatActivity {
         if (id == android.R.id.home) {
             finish();
         }
-        return super.onOptionsItemSelected(item);
+        switch (item.getItemId()) {
+
+            case R.id.action_cart:
+                showCart();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+
     }
+
+    public void showCart(){
+        Intent i = new Intent(this,CartActivity.class);
+        this.startActivity(i);
+    }
+
 }

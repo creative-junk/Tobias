@@ -2,20 +2,31 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.DiscoverFragment"
-    android:padding="12dp">
+    android:padding="12dp"
+    tools:context=".fragments.DiscoverFragment">
 
     <GridView
         android:id="@+id/categoryGrid"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:columnWidth="90dp"
-        android:numColumns="auto_fit"
-        android:verticalSpacing="10dp"
+        android:gravity="center"
         android:horizontalSpacing="10dp"
+        android:numColumns="auto_fit"
         android:stretchMode="columnWidth"
-        android:gravity="center">
-
+        android:verticalSpacing="10dp">
 
     </GridView>
+    <RelativeLayout
+        android:id="@+id/loadingPanel"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"/>
+    </RelativeLayout>
 </FrameLayout>

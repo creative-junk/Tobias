@@ -2,6 +2,7 @@ package com.crysoft.me.tobias;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -59,7 +60,8 @@ import java.util.List;
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        getSupportActionBar().setHomeButtonEnabled(true);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         //Setup the DB
         databaseAdapter = DBAdapter.getInstance(this);
@@ -134,7 +136,7 @@ import java.util.List;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main_menu, menu);
+        getMenuInflater().inflate(R.menu.home_menu, menu);
         return true;
     }
 
@@ -144,8 +146,25 @@ import java.util.List;
         if (id == android.R.id.home) {
             finish();
         }
-        return super.onOptionsItemSelected(item);
+        switch (item.getItemId()) {
+            case R.id.action_search:
+                newSearch();
+                return true;
+            case R.id.action_cart:
+                showCart();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
+     public void newSearch(){
+
+     }
+     public void showCart(){
+         Intent i = new Intent(this,CartActivity.class);
+         this.startActivity(i);
+     }
 
 
-}
+
+ }

@@ -36,6 +36,8 @@ public class DBAdapter extends SQLiteOpenHelper {
     //Table Names
     private static final String TABLE_SHOPPING_CART = "shopping_cart";
     private static final String TABLE_FAVOURITES = "favourites";
+    private static final String TABLE_RECENT_SEARCHES = "search_table";
+    private static final String TABLE_RECENTLY_VIEWED = "recently_viewed";
     //CART table columns
     private static final String KEY_CART_ID = "_id";
     private static final String KEY_PRODUCT_ID = "product_id";
@@ -57,6 +59,21 @@ public class DBAdapter extends SQLiteOpenHelper {
     private static final String KEY_FAV_PRODUCT_QUANTITY = "fav_product_quantity";
     private static final String KEY_FAV_PRODUCT_STATUS = "fav_product_status";
     private static final String KEY_FAV_STATUS = "fav_status";
+
+    //SEARCH TABLE
+    private static final String KEY_SEARCH_ID ="_id";
+    private static final String KEY_SEARCH_WORD = "search_word";
+
+    //RECENTLY VIEWED TABLE
+    private static final String KEY_VIEWED_ID ="_id";
+    private static final String KEY_VIEWED_PRODUCT_ID = "product_id";
+    private static final String KEY_VIEWED_PRODUCT_NAME = "product_name";
+    private static final String KEY_VIEWED_PRODUCT_DESCRIPTION = "product_description";
+    private static final String KEY_VIEWED_PRODUCT_PRICE = "product_price";
+    private static final String KEY_VIEWED_PRODUCT_IMAGE = "product_image";
+    private static final String KEY_VIEWED_PRODUCT_STATUS = "product_status";
+    private static final String KEY_VIEWED_STATUS = "cart_status";
+
 
     // lets create a method for giving back an instance of this class so there will only ever be one instance at a time. If we have one we just return it,otherwise we create a new one
     public static synchronized DBAdapter getInstance(Context context) {
@@ -106,10 +123,26 @@ public class DBAdapter extends SQLiteOpenHelper {
                 KEY_FAV_STATUS + " INTEGER," +
                 KEY_FAV_PRODUCT_QUANTITY + " INTEGER" +
                 ")";
-
+        String CREATE_SEARCH_TABLE = "CREATE TABLE " + TABLE_RECENT_SEARCHES +
+                "(" +
+                KEY_SEARCH_ID + " INTEGER PRIMARY KEY," +
+                KEY_SEARCH_WORD + " TEXT" +
+                ")";
+        String CREATE_RECENTLY_VIEWED_TABLE ="CREATE TABLE " + TABLE_RECENTLY_VIEWED +
+                "(" +
+                KEY_VIEWED_ID + " INTEGER," +
+                KEY_VIEWED_PRODUCT_ID + " INTEGER," +
+                KEY_VIEWED_PRODUCT_NAME + " TEXT," +
+                KEY_VIEWED_PRODUCT_PRICE + " TEXT," +
+                KEY_VIEWED_PRODUCT_IMAGE + " TEXT," +
+                KEY_VIEWED_PRODUCT_DESCRIPTION + " TEXT," +
+                KEY_VIEWED_PRODUCT_STATUS + " INTEGER," +
+                KEY_VIEWED_STATUS + " INTEGER," +
+                ")";
         db.execSQL(CREATE_SHOPPING_CART_TABLE);
         db.execSQL(CREATE_FAVOURITES_TABLE);
-
+        db.execSQL(CREATE_SEARCH_TABLE);
+        db.execSQL(CREATE_RECENTLY_VIEWED_TABLE);
 
     }
 
@@ -412,6 +445,151 @@ public class DBAdapter extends SQLiteOpenHelper {
         db.close();
         return true;
     }
+
+
+    //Add to Recently Viewed
+    public boolean addOrUpdateRecentlyViewed(ProductsModel productDetails) {
+        //Use the Cached Connection
+        SQLiteDatabase db = getWritableDatabase();
+        Boolean transactionSuccessful = false;
+
+        //As usual Wrap it in a transaction
+        db.beginTransaction();
+        try {
+            ContentValues values = new ContentValues();
+            values.put(KEY_VIEWED_PRODUCT_ID, productDetails.getObjectId());
+            values.put(KEY_VIEWED_PRODUCT_NAME, productDetails.getProductName());
+            values.put(KEY_VIEWED_PRODUCT_PRICE, productDetails.getProductPrice());
+            values.put(KEY_VIEWED_PRODUCT_IMAGE, productDetails.getImageFile());
+            values.put(KEY_VIEWED_PRODUCT_DESCRIPTION, productDetails.getDescription());
+            values.put(KEY_VIEWED_PRODUCT_STATUS, productDetails.getProductStatus());
+
+
+            //Let's try to update the Saved Product if it exists.
+            int rows = db.update(TABLE_RECENTLY_VIEWED, values, KEY_VIEWED_PRODUCT_ID + "= ?", new String[]{productDetails.getObjectId()});
+
+            //Let's check if the update worked
+            if (rows == 1) {
+                //Ok, we have updated a Saved Product, we could probably get the Product updated at this point if we needed to
+                db.setTransactionSuccessful();
+                transactionSuccessful = true;
+
+            } else {
+                //No Such Product Here, insert it
+                db.insertOrThrow(TABLE_RECENTLY_VIEWED, null, values);
+                db.setTransactionSuccessful();
+                transactionSuccessful = true;
+            }
+        } catch (Exception e) {
+            Log.d(TAG, "Error trying to Update Recently Viewed");
+            transactionSuccessful = false;
+        } finally {
+            db.endTransaction();
+        }
+        return transactionSuccessful;
+
+    }
+
+    //Get RECENTLY viewed
+    public List<ProductsModel> getRecentlyViewed() {
+        List<ProductsModel> productList = new ArrayList<ProductsModel>();
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.query(TABLE_RECENTLY_VIEWED, new String[]{
+                KEY_VIEWED_ID, KEY_VIEWED_PRODUCT_ID, KEY_VIEWED_PRODUCT_NAME, KEY_VIEWED_PRODUCT_PRICE, KEY_VIEWED_PRODUCT_IMAGE, KEY_VIEWED_PRODUCT_DESCRIPTION, KEY_VIEWED_PRODUCT_STATUS
+        }, null, null, null, null, null);
+        try {
+            if (cursor.moveToFirst()) {
+                do {
+                    ProductsModel productDetails = new ProductsModel();
+                    productDetails.setObjectId(cursor.getString(1));
+                    productDetails.setProductName(cursor.getString(2));
+                    productDetails.setProductPrice(cursor.getString(3));
+                    productDetails.setImageFile(cursor.getString(4));
+                    productDetails.setDescription(cursor.getString(5));
+                    productDetails.setQuantity(cursor.getString(6));
+                    productDetails.setProductStatus(cursor.getString(7));
+                    productDetails.setFavStatus(cursor.getString(8));
+                    productList.add(productDetails);
+                } while (cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            Log.d(TAG, "Error Retrieving Wishlist Items");
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return productList;
+
+    }
+
+    //Clear the recently viewed Table
+    private boolean emptyRecentlyViewed() {
+        SQLiteDatabase db = getWritableDatabase();
+        String delSQLString = "DELETE FROM " + TABLE_RECENTLY_VIEWED + ";";
+        db.execSQL(delSQLString);
+        db.close();
+        return true;
+    }
+
+    //Add to Recently Searched
+    public boolean addSearchWord(String word) {
+        //Use the Cached Connection
+        SQLiteDatabase db = getWritableDatabase();
+        Boolean transactionSuccessful = false;
+
+        //As usual Wrap it in a transaction
+        db.beginTransaction();
+        try {
+            ContentValues values = new ContentValues();
+            values.put(KEY_SEARCH_WORD,word);
+                //insert the keyword
+                db.insertOrThrow(TABLE_RECENT_SEARCHES, null, values);
+                db.setTransactionSuccessful();
+                transactionSuccessful = true;
+
+        } catch (Exception e) {
+            Log.d(TAG, "Error trying to Update Recently Viewed");
+            transactionSuccessful = false;
+        } finally {
+            db.endTransaction();
+        }
+        return transactionSuccessful;
+
+    }
+
+    //Get RECENTLY viewed
+    public List<String> getRecentSearches() {
+        List<String> keyWords = new ArrayList<String>();
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.query(TABLE_RECENT_SEARCHES, new String[]{
+                KEY_SEARCH_ID, KEY_SEARCH_WORD}, null, null, null, null, null);
+        try {
+            if (cursor.moveToFirst()) {
+                do {
+                    keyWords.add(cursor.getString(1));
+                } while (cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            Log.d(TAG, "Error Retrieving Wishlist Items");
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return keyWords;
+
+    }
+    //Clear the recently viewed Table
+    private boolean emptyRecentSearch() {
+        SQLiteDatabase db = getWritableDatabase();
+        String delSQLString = "DELETE FROM " + TABLE_RECENT_SEARCHES + ";";
+        db.execSQL(delSQLString);
+        db.close();
+        return true;
+    }
+
+
 
 }
 

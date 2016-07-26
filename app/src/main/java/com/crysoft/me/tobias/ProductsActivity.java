@@ -2,18 +2,22 @@ package com.crysoft.me.tobias;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.RelativeLayout;
 
 import com.crysoft.me.tobias.adapters.CategoryAdapter;
 import com.crysoft.me.tobias.adapters.ProductsAdapter;
@@ -27,6 +31,7 @@ public class ProductsActivity extends AppCompatActivity {
     private ParseQueryAdapter<ParseObject> mainAdapter;
     private ProductsAdapter productsAdapter;
     private GridView gridView;
+    private RelativeLayout rlLoading;
 
 
     @Override
@@ -51,22 +56,21 @@ public class ProductsActivity extends AppCompatActivity {
         //Initialize our subclass of the Parse Query Adapter
         productsAdapter = new ProductsAdapter(this,categoryId);
         gridView = (GridView) findViewById(R.id.productsGrid);
+        rlLoading = (RelativeLayout) findViewById(R.id.loadingPanel);
 
         mainAdapter.addOnQueryLoadListener(new ParseQueryAdapter.OnQueryLoadListener<ParseObject>() {
             private ProgressDialog mProgressDialog;
             @Override
             public void onLoading() {
-                mProgressDialog = new ProgressDialog(ProductsActivity.this);
-                mProgressDialog.setMessage("Loading Shop...");
-                mProgressDialog.setIndeterminate(false);
-                mProgressDialog.show();
-
+                gridView.setVisibility(View.GONE);
+                rlLoading.setVisibility(View.VISIBLE);
             }
 
             @Override
             public void onLoaded(List<ParseObject> objects, Exception e) {
+                gridView.setVisibility(View.VISIBLE);
+                rlLoading.setVisibility(View.GONE);
                 gridView.setAdapter(productsAdapter);
-                mProgressDialog.dismiss();
             }
         });
 
@@ -106,10 +110,30 @@ public class ProductsActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main_menu, menu);
-
+        getMenuInflater().inflate(R.menu.home_menu, menu);
+        //Associte the Searchable Configuration with the SearchView
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         return true;
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+
+            case R.id.action_cart:
+                showCart();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+
+    }
+
+    public void showCart(){
+        Intent i = new Intent(this,CartActivity.class);
+        this.startActivity(i);
+    }
 
 }
