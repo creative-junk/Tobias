@@ -4,9 +4,14 @@
     android:layout_height="match_parent"
     android:padding="12dp"
     tools:context=".fragments.DiscoverFragment">
-
+    <ImageSwitcher
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageSwitcher"
+        android:layout_gravity="left|top" />
     <GridView
         android:id="@+id/categoryGrid"
+        android:layout_below="@+id/imageSwitcher"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:columnWidth="90dp"
@@ -29,4 +34,6 @@
             android:layout_height="wrap_content"
             android:indeterminate="true"/>
     </RelativeLayout>
+
+
 </FrameLayout>

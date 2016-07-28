@@ -64,7 +64,7 @@ public class DiscoverFragment extends Fragment {
         categoryAdapter = new CategoryAdapter(getActivity());
         gridView = (GridView) getActivity().findViewById(R.id.categoryGrid);
         rlLoading = (RelativeLayout) getActivity().findViewById(R.id.loadingPanel);
-
+/*
        mainAdapter.addOnQueryLoadListener(new ParseQueryAdapter.OnQueryLoadListener<ParseObject>() {
             private ProgressDialog mProgressDialog;
             @Override
@@ -79,8 +79,8 @@ public class DiscoverFragment extends Fragment {
                 rlLoading.setVisibility(View.GONE);
                 gridView.setAdapter(categoryAdapter);
             }
-        });
-        //gridView.setAdapter(categoryAdapter);
+        });*/
+        gridView.setAdapter(categoryAdapter);
         mainAdapter.loadObjects();
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

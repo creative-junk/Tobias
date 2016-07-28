@@ -40,4 +40,11 @@
     </string>
     <string name="title_activity_sign_in">SignIn</string>
     <string name="title_activity_register">RegisterActivity</string>
+    <!-- FACEBOOK -->
+    <string name="facebook_app_id">1716954631899002</string>
+    <string name="title_activity_facebook_login">FacebookLoginActivity</string>
+
+    <string name="title_activity_fullscreen_login">FullscreenLoginActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
 </resources>

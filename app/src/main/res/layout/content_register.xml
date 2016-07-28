@@ -29,6 +29,7 @@
                 android:src="@drawable/ic_mail" />
 
             <EditText
+                android:id="@+id/tvEmailAddress"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
@@ -47,6 +48,7 @@
                 android:src="@drawable/ic_person" />
 
             <EditText
+                android:id="@+id/tvFirstName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
@@ -64,6 +66,7 @@
                 android:src="@drawable/ic_person" />
 
             <EditText
+                android:id="@+id/tvLastName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
@@ -81,6 +84,7 @@
                 android:src="@drawable/ic_lock" />
 
             <EditText
+                android:id="@+id/etPassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
@@ -99,6 +103,7 @@
             android:layout_marginTop="20dp"/>
 
         <Button
+            android:id="@+id/btnRegister"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="agree and Continue"

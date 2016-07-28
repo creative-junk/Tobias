@@ -125,6 +125,9 @@ public class ProductsActivity extends AppCompatActivity {
             case R.id.action_cart:
                 showCart();
                 return true;
+            case R.id.nav_signin:
+                showLogin();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -133,6 +136,10 @@ public class ProductsActivity extends AppCompatActivity {
 
     public void showCart(){
         Intent i = new Intent(this,CartActivity.class);
+        this.startActivity(i);
+    }
+    public void showLogin(){
+        Intent i = new Intent(this,FullscreenLoginActivity.class);
         this.startActivity(i);
     }
 

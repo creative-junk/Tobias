@@ -94,7 +94,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main_menu, menu);
+        getMenuInflater().inflate(R.menu.home_menu, menu);
 
         //Associte the Searchable Configuration with the SearchView
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
@@ -109,18 +109,22 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
              case R.id.action_cart:
                 showCart();
                 return true;
-            default:
+            case R.id.nav_signin:
+                showLogin();
+                return true;
+              default:
                 return super.onOptionsItemSelected(item);
         }
 
 
     }
-    public void newSearch(){
-        Intent i = new Intent(this,SearchActivity.class);
-        this.startActivity(i);
-    }
+
     public void showCart(){
         Intent i = new Intent(this,CartActivity.class);
+        this.startActivity(i);
+    }
+    public void showLogin(){
+        Intent i = new Intent(this,FullscreenLoginActivity.class);
         this.startActivity(i);
     }
 

@@ -25,6 +25,7 @@ import com.crysoft.me.tobias.database.DBAdapter;
 import com.crysoft.me.tobias.listeners.CartOverflowSelectedListener;
 import com.crysoft.me.tobias.listeners.CartQtyButtonListener;
 import com.crysoft.me.tobias.models.ProductsModel;
+import com.parse.ParseUser;
 
 import java.util.List;
 
@@ -146,17 +147,30 @@ import java.util.List;
         if (id == android.R.id.home) {
             finish();
         }
-        switch (item.getItemId()) {
+        switch (id) {
             case R.id.action_search:
                 newSearch();
                 return true;
             case R.id.action_cart:
                 showCart();
                 return true;
+            case R.id.nav_signin:
+
+                return true;
+
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
+
+     @Override
+     public boolean onPrepareOptionsMenu(Menu menu) {
+         if (ParseUser.getCurrentUser() != null) {
+             menu.findItem(R.id.nav_signin).setTitle("Home");
+         }
+         return super.onPrepareOptionsMenu(menu);
+     }
+
      public void newSearch(){
 
      }
