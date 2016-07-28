@@ -1,0 +1,51 @@
+{
+  "project_info": {
+    "project_number": "311895841131",
+    "project_id": "firebase-tobias"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:311895841131:android:b85589445627019e",
+        "android_client_info": {
+          "package_name": "com.crysoft.me.tobias"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "311895841131-c5ii0t5aevkr9vrcb7c6puuilq3p3c65.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.crysoft.me.tobias",
+            "certificate_hash": "40D90E8828208DDB727BE27392CF3DCA3A83A7A9"
+          }
+        },
+        {
+          "client_id": "311895841131-37316sdb8v0icstpl9ph8gc8djv2uv9o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBlt-q_MH-e_y5YKyBUErX6sxrM4YqbF5w"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 2,
+          "analytics_property": {
+            "tracking_id": "UA-81508909-1"
+          }
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
