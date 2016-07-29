@@ -11,6 +11,7 @@ import android.util.Log;
 import com.crysoft.me.tobias.adapters.CartAdapter;
 import com.crysoft.me.tobias.helpers.Constants;
 import com.crysoft.me.tobias.helpers.Utils;
+import com.crysoft.me.tobias.models.CategoryModel;
 import com.crysoft.me.tobias.models.ProductsModel;
 
 import java.text.DecimalFormat;
@@ -32,12 +33,22 @@ public class DBAdapter extends SQLiteOpenHelper {
 
     //Database Information
     private static final String DATABASE_NAME = "Tobias";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
     //Table Names
+    private static final String TABLE_CATEGORIES = "categories";
     private static final String TABLE_SHOPPING_CART = "shopping_cart";
     private static final String TABLE_FAVOURITES = "favourites";
     private static final String TABLE_RECENT_SEARCHES = "search_table";
     private static final String TABLE_RECENTLY_VIEWED = "recently_viewed";
+    //CATEGORIES table columns
+    private static final String KEY_CATEGORY_ID ="_id";
+    private static final String KEY_CATEGORY_OBJECT_ID ="category_id";
+    private static final String KEY_CATEGORY_NAME ="category_name";
+    private static final String KEY_CATEGORY_IMAGE ="category_image";
+    private static final String KEY_CATEGORY_TAG ="category_tag";
+    private static final String KEY_CATEGORY_TYPE="category_type";
+    private static final String KEY_CATEGORY_PARENT_ID ="parent_id";
+
     //CART table columns
     private static final String KEY_CART_ID = "_id";
     private static final String KEY_PRODUCT_ID = "product_id";
@@ -99,6 +110,16 @@ public class DBAdapter extends SQLiteOpenHelper {
     //Initialize the Database AND CREATE our tables if needed
     @Override
     public void onCreate(SQLiteDatabase db) {
+        String CREATE_CATEGORIES_TABLE ="CREATE TABLE " + TABLE_CATEGORIES +
+                "(" +
+                KEY_CATEGORY_ID + " INTEGER PRIMARY KEY," +
+                KEY_CATEGORY_OBJECT_ID + " INTEGER," +
+                KEY_CATEGORY_NAME + " TEXT," +
+                KEY_CATEGORY_IMAGE + " TEXT," +
+                KEY_CATEGORY_TAG + " TEXT," +
+                KEY_CATEGORY_TYPE + " TEXT," +
+                KEY_CATEGORY_PARENT_ID + " TEXT" +
+                ")";
         String CREATE_SHOPPING_CART_TABLE = "CREATE TABLE " + TABLE_SHOPPING_CART +
                 "(" +
                 KEY_CART_ID + " INTEGER PRIMARY KEY," +
@@ -137,8 +158,9 @@ public class DBAdapter extends SQLiteOpenHelper {
                 KEY_VIEWED_PRODUCT_IMAGE + " TEXT," +
                 KEY_VIEWED_PRODUCT_DESCRIPTION + " TEXT," +
                 KEY_VIEWED_PRODUCT_STATUS + " INTEGER," +
-                KEY_VIEWED_STATUS + " INTEGER," +
+                KEY_VIEWED_STATUS + " INTEGER" +
                 ")";
+        db.execSQL(CREATE_CATEGORIES_TABLE);
         db.execSQL(CREATE_SHOPPING_CART_TABLE);
         db.execSQL(CREATE_FAVOURITES_TABLE);
         db.execSQL(CREATE_SEARCH_TABLE);
@@ -151,7 +173,10 @@ public class DBAdapter extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         if (oldVersion != newVersion) {
             db.execSQL("DROP TABLE IF EXISTS " + TABLE_SHOPPING_CART);
-            db.execSQL("DROP TABLE IF EXISTS" + TABLE_FAVOURITES);
+            db.execSQL("DROP TABLE IF EXISTS " + TABLE_FAVOURITES);
+            db.execSQL("DROP TABLE IF EXISTS " + TABLE_CATEGORIES);
+            db.execSQL("DROP TABLE IF EXISTS " + TABLE_RECENT_SEARCHES);
+            db.execSQL("DROP TABLE IF EXISTS " + TABLE_RECENTLY_VIEWED);
             onCreate(db);
 
         }
@@ -449,6 +474,7 @@ public class DBAdapter extends SQLiteOpenHelper {
 
     //Add to Recently Viewed
     public boolean addOrUpdateRecentlyViewed(ProductsModel productDetails) {
+        Log.i("Recently Viewed", "You are here");
         //Use the Cached Connection
         SQLiteDatabase db = getWritableDatabase();
         Boolean transactionSuccessful = false;
@@ -495,25 +521,23 @@ public class DBAdapter extends SQLiteOpenHelper {
         List<ProductsModel> productList = new ArrayList<ProductsModel>();
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.query(TABLE_RECENTLY_VIEWED, new String[]{
-                KEY_VIEWED_ID, KEY_VIEWED_PRODUCT_ID, KEY_VIEWED_PRODUCT_NAME, KEY_VIEWED_PRODUCT_PRICE, KEY_VIEWED_PRODUCT_IMAGE, KEY_VIEWED_PRODUCT_DESCRIPTION, KEY_VIEWED_PRODUCT_STATUS
+                KEY_VIEWED_ID,KEY_VIEWED_PRODUCT_ID,KEY_VIEWED_PRODUCT_NAME,KEY_VIEWED_PRODUCT_PRICE,KEY_VIEWED_PRODUCT_IMAGE,KEY_VIEWED_PRODUCT_DESCRIPTION,KEY_VIEWED_PRODUCT_STATUS
         }, null, null, null, null, null);
         try {
             if (cursor.moveToFirst()) {
                 do {
                     ProductsModel productDetails = new ProductsModel();
-                    productDetails.setObjectId(cursor.getString(1));
-                    productDetails.setProductName(cursor.getString(2));
-                    productDetails.setProductPrice(cursor.getString(3));
-                    productDetails.setImageFile(cursor.getString(4));
-                    productDetails.setDescription(cursor.getString(5));
-                    productDetails.setQuantity(cursor.getString(6));
-                    productDetails.setProductStatus(cursor.getString(7));
-                    productDetails.setFavStatus(cursor.getString(8));
+                    productDetails.setObjectId(cursor.getString(cursor.getColumnIndex(KEY_VIEWED_PRODUCT_ID)));
+                    productDetails.setProductName(cursor.getString(cursor.getColumnIndex(KEY_VIEWED_PRODUCT_NAME)));
+                    productDetails.setProductPrice(cursor.getString(cursor.getColumnIndex(KEY_VIEWED_PRODUCT_PRICE)));
+                    productDetails.setImageFile(cursor.getString(cursor.getColumnIndex(KEY_VIEWED_PRODUCT_IMAGE)));
+                    productDetails.setDescription(cursor.getString(cursor.getColumnIndex(KEY_VIEWED_PRODUCT_DESCRIPTION)));
+                    productDetails.setProductStatus(cursor.getString(cursor.getColumnIndex(KEY_VIEWED_PRODUCT_STATUS)));
                     productList.add(productDetails);
                 } while (cursor.moveToNext());
             }
         } catch (Exception e) {
-            Log.d(TAG, "Error Retrieving Wishlist Items");
+            Log.d(TAG, "Error Retrieving Recently Viewed Items");
         } finally {
             if (cursor != null) {
                 cursor.close();
@@ -581,12 +605,86 @@ public class DBAdapter extends SQLiteOpenHelper {
 
     }
     //Clear the recently viewed Table
-    private boolean emptyRecentSearch() {
+    public boolean emptyRecentSearch() {
         SQLiteDatabase db = getWritableDatabase();
         String delSQLString = "DELETE FROM " + TABLE_RECENT_SEARCHES + ";";
         db.execSQL(delSQLString);
         db.close();
         return true;
+    }
+    public void updateAllCategories(ArrayList<CategoryModel> categories){
+        for (int i=0;i<categories.size();i++){
+            CategoryModel categoryDetails=categories.get(i);
+            insertOrUpdateCategory(categoryDetails);
+        }
+
+    }
+    public boolean insertOrUpdateCategory(CategoryModel categoryDetails){
+        SQLiteDatabase db = getWritableDatabase();
+        Boolean transactionSuccessful = false;
+
+        //As usual Wrap it in a transaction
+        db.beginTransaction();
+        try {
+            ContentValues values = new ContentValues();
+            values.put(KEY_CATEGORY_OBJECT_ID, categoryDetails.getObjectId());
+            values.put(KEY_CATEGORY_NAME, categoryDetails.getCategoryName());
+            values.put(KEY_CATEGORY_IMAGE, categoryDetails.getCategoryImage());
+            values.put(KEY_CATEGORY_TYPE, categoryDetails.getCategoryType());
+            values.put(KEY_CATEGORY_TAG, categoryDetails.getCategoryTag());
+            values.put(KEY_CATEGORY_PARENT_ID, categoryDetails.getParentId());
+
+            //Let's try to update the Saved Product if it exists.
+            int rows = db.update(TABLE_CATEGORIES, values, KEY_CATEGORY_OBJECT_ID + "= ?", new String[]{categoryDetails.getObjectId()});
+
+            //Let's check if the update worked
+            if (rows == 1) {
+                //Ok, we have updated a Saved Product, we could probably get the Product updated at this point if we needed to
+                db.setTransactionSuccessful();
+                transactionSuccessful = true;
+
+            } else {
+                //No Such Product Here, insert it
+                db.insertOrThrow(TABLE_CATEGORIES, null, values);
+                db.setTransactionSuccessful();
+                transactionSuccessful = true;
+            }
+        } catch (Exception e) {
+            Log.d(TAG, "Error trying to Update Categories");
+            transactionSuccessful = false;
+        } finally {
+            db.endTransaction();
+        }
+        return transactionSuccessful;
+
+    }
+    //Get RECENTLY viewed
+    public List<CategoryModel> getAllCategories() {
+        List<CategoryModel> categoryList = new ArrayList<CategoryModel>();
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.query(TABLE_CATEGORIES, new String[]{
+                KEY_CATEGORY_ID, KEY_CATEGORY_OBJECT_ID, KEY_CATEGORY_NAME, KEY_CATEGORY_IMAGE, KEY_CATEGORY_TAG
+        }, null, null, null, null, null);
+        try {
+            if (cursor.moveToFirst()) {
+                do {
+                    CategoryModel categoryDetails = new CategoryModel();
+                    categoryDetails.setObjectId(cursor.getString(1));
+                    categoryDetails.setCategoryName(cursor.getString(2));
+                    categoryDetails.setCategoryImage(cursor.getString(3));
+                    categoryDetails.setCategoryTag(cursor.getString(4));
+                    categoryList.add(categoryDetails);
+                } while (cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            Log.d(TAG, "Error Retrieving categories");
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return categoryList;
+
     }
 
 

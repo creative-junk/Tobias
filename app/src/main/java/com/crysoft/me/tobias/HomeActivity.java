@@ -3,7 +3,6 @@ package com.crysoft.me.tobias;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.TypedArray;
 import android.net.Uri;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
@@ -20,20 +19,23 @@ import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ListView;
 
-import com.crysoft.me.tobias.adapters.DrawerListAdapter;
+import com.crysoft.me.tobias.database.DBAdapter;
 import com.crysoft.me.tobias.fragments.CartFragment;
-import com.crysoft.me.tobias.fragments.CategoryFragment;
+import com.crysoft.me.tobias.fragments.RecentlyViewedFragment;
 import com.crysoft.me.tobias.fragments.DiscoverFragment;
 import com.crysoft.me.tobias.fragments.FavouriteFragment;
 import com.crysoft.me.tobias.fragments.SearchFragment;
-import com.crysoft.me.tobias.models.NavDrawerItem;
+import com.crysoft.me.tobias.models.CategoryModel;
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,CartFragment.OnFragmentInteractionListener, CategoryFragment.OnFragmentInteractionListener, DiscoverFragment.OnFragmentInteractionListener, FavouriteFragment.OnFragmentInteractionListener, SearchFragment.OnFragmentInteractionListener {
+public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,CartFragment.OnFragmentInteractionListener, RecentlyViewedFragment.OnFragmentInteractionListener, DiscoverFragment.OnFragmentInteractionListener, FavouriteFragment.OnFragmentInteractionListener, SearchFragment.OnFragmentInteractionListener {
     private Toolbar mToolBar;
     private ViewPager viewPager;
     private TabLayout tabLayout;
@@ -42,11 +44,13 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             R.drawable.ic_fav,
             R.drawable.ic_cart
     };
-
+    private DBAdapter databaseAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        databaseAdapter = DBAdapter.getInstance(this);
 
         mToolBar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolBar);
@@ -67,6 +71,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.setItemIconTintList(null);
+        updateCategories();
 
     }
     @Override
@@ -87,7 +92,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(new DiscoverFragment(),"Browse");
-        adapter.addFragment(new SearchFragment(),"Search");
+        adapter.addFragment(new RecentlyViewedFragment(),"Recently Viewed");
         viewPager.setAdapter(adapter);
     }
 
@@ -187,6 +192,28 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             return mFragmentTitleList.get(position);
         }
     }
+    private void updateCategories(){
 
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("Category");
+        query.whereNotEqualTo("category_type","main");
+        query.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> categoryObjectList, ParseException e) {
+                if (e==null){
+                    ArrayList<CategoryModel> categoryList= new ArrayList<CategoryModel>();
+                    for (int i=0;i<categoryObjectList.size();i++){
+                        ParseObject category = categoryObjectList.get(i);
+                        CategoryModel categoryDetails = new CategoryModel();
+                        categoryDetails.setObjectId(category.getObjectId());
+                        categoryDetails.setCategoryName(category.getString("category_name"));
+                        categoryDetails.setCategoryTag(category.getString("category_tag"));
+                        categoryDetails.setCategoryImage(category.getParseFile("category_image").getUrl());
+                        categoryList.add(categoryDetails);
+                    }
+                    databaseAdapter.updateAllCategories(categoryList);
+                }
+            }
+        });
+    }
 
 }

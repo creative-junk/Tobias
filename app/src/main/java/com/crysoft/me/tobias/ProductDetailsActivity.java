@@ -62,6 +62,8 @@ public class ProductDetailsActivity extends AppCompatActivity {
         objectId = productDetails.getObjectId();
         imageURL = productDetails.getImageFile();
 
+        databaseAdapter.addOrUpdateRecentlyViewed(productDetails);
+
         addToFav.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
