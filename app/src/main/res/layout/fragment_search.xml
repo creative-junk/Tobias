@@ -1,13 +1,49 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".fragments.SearchFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <EditText
+        android:id="@+id/etFragmentSearch"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_margin="15dp"
+        android:paddingLeft="20dp"
+        android:hint="Search"
+        android:singleLine="true"
+        android:textSize="15dp"
+        android:textColor="@android:color/black"
+        />
+    <TextView
+        android:id="@+id/tvFragmentSearchLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/etFragmentSearch"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="20dp"
+        android:text="Category"
+        android:textSize="15dp"/>
+    <Spinner
+        android:id="@+id/spinnerCategory"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_below="@+id/tvFragmentSearchLabel"/>
+    <Button
+        android:id="@+id/btnFragmentFind"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Find"
+        android:layout_below="@+id/spinnerCategory"
+        android:textSize="15dp"
+        android:textColor="@android:color/white"
+        android:background="@color/colorPrimary"
+        android:layout_marginTop="50dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"/>
 
-</FrameLayout>
+</RelativeLayout>

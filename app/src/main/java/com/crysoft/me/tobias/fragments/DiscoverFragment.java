@@ -3,25 +3,31 @@ package com.crysoft.me.tobias.fragments;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
+import android.widget.ViewFlipper;
 
 import com.crysoft.me.tobias.HomeActivity;
 import com.crysoft.me.tobias.ProductsActivity;
 import com.crysoft.me.tobias.R;
 import com.crysoft.me.tobias.adapters.CategoryAdapter;
+import com.crysoft.me.tobias.adapters.MainCategoryAdapter;
 import com.parse.ParseObject;
 import com.parse.ParseQueryAdapter;
 
@@ -33,10 +39,15 @@ import java.util.List;
 public class DiscoverFragment extends Fragment {
 
     private ParseQueryAdapter<ParseObject> mainAdapter;
+    private ParseQueryAdapter<ParseObject> mainParseAdapter;
     private CategoryAdapter categoryAdapter;
+    private MainCategoryAdapter mainCategoryAdapter;
     private GridView gridView;
+    private GridView mainGridView;
     private RelativeLayout rlLoading;
+    private ViewFlipper mViewFlipper;
 
+    int mFlipping = 0 ; // Initially flipping is off
 
     public DiscoverFragment() {
         // Required empty public constructor
@@ -54,17 +65,32 @@ public class DiscoverFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        //Main Query Adapter
+        mainParseAdapter = new ParseQueryAdapter<ParseObject>(getActivity(),"category");
+        mainParseAdapter.setTextKey("category_name");
+        mainParseAdapter.setImageKey("category_image");
+
         //Initialize Parse Adapter
         mainAdapter = new ParseQueryAdapter<ParseObject>(getActivity(), "Category");
         mainAdapter.setTextKey("category_name");
         mainAdapter.setTextKey("category_tag");
         mainAdapter.setImageKey("category_image");
 
+
         //Initialize our subclass of the Parse Query Adapter
         categoryAdapter = new CategoryAdapter(getActivity());
+        mainCategoryAdapter = new MainCategoryAdapter(getActivity());
+
         gridView = (GridView) getActivity().findViewById(R.id.categoryGrid);
+        mainGridView = (GridView) getActivity().findViewById(R.id.mainCategoryGrid);
         rlLoading = (RelativeLayout) getActivity().findViewById(R.id.loadingPanel);
-/*
+        mViewFlipper = (ViewFlipper) getActivity().findViewById(R.id.viewFlipper);
+
+
+        mViewFlipper.setAutoStart(true);
+        mViewFlipper.startFlipping();
+
+
        mainAdapter.addOnQueryLoadListener(new ParseQueryAdapter.OnQueryLoadListener<ParseObject>() {
             private ProgressDialog mProgressDialog;
             @Override
@@ -79,9 +105,15 @@ public class DiscoverFragment extends Fragment {
                 rlLoading.setVisibility(View.GONE);
                 gridView.setAdapter(categoryAdapter);
             }
-        });*/
-        gridView.setAdapter(categoryAdapter);
+        });
+        // Setup our Grid Views' Adapters
+       // gridView.setAdapter(categoryAdapter);
+        mainGridView.setAdapter(mainCategoryAdapter);
+
+        //Use our Parse Adapter to Load data into the Grid
+        mainParseAdapter.loadObjects();
         mainAdapter.loadObjects();
+
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

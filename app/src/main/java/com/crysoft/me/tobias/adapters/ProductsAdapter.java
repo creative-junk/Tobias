@@ -19,13 +19,14 @@ import static android.text.TextUtils.substring;
  * Created by Maxx on 7/18/2016.
  */
 public class ProductsAdapter extends ParseQueryAdapter<ParseObject> {
-    public ProductsAdapter(Context context,String categoryId) {
+    public ProductsAdapter(Context context, final String categoryId) {
         super(context,new ParseQueryAdapter.QueryFactory<ParseObject>(){
 
             @Override
             public ParseQuery create() {
                 ParseQuery query = new ParseQuery("Product");
                 //query.whereEqualTo("category_type","main");
+                query.whereEqualTo("category_id", categoryId);
                 return query;
             }
         });
