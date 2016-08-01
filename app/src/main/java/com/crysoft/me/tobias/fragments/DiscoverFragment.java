@@ -29,6 +29,7 @@ import com.crysoft.me.tobias.ProductsActivity;
 import com.crysoft.me.tobias.R;
 import com.crysoft.me.tobias.adapters.CategoryAdapter;
 import com.crysoft.me.tobias.adapters.LocalCategoryAdapter;
+import com.crysoft.me.tobias.adapters.LocalMainCategoryAdapter;
 import com.crysoft.me.tobias.adapters.MainCategoryAdapter;
 import com.crysoft.me.tobias.database.DBAdapter;
 import com.crysoft.me.tobias.models.CategoryModel;
@@ -55,8 +56,10 @@ public class DiscoverFragment extends Fragment {
     private CategoryAdapter categoryAdapter;
     private MainCategoryAdapter mainCategoryAdapter;
     private LocalCategoryAdapter localCategoryAdapter;
+    private LocalMainCategoryAdapter localMainCategoryAdapter;
 
     private List<CategoryModel> categoryList;
+    private List<CategoryModel> mainCategoryList;
 
     private GridView gridView;
     private GridView mainGridView;
@@ -91,16 +94,58 @@ public class DiscoverFragment extends Fragment {
         mViewFlipper.setAutoStart(true);
         mViewFlipper.startFlipping();
 
-        //Main Query Adapter
-        mainParseAdapter = new ParseQueryAdapter<ParseObject>(getActivity(), "category");
-        mainParseAdapter.setTextKey("category_name");
-        mainParseAdapter.setImageKey("category_image");
-        mainCategoryAdapter = new MainCategoryAdapter(getActivity());
-        //Set up the grid
-        mainGridView.setAdapter(mainCategoryAdapter);
-        //Load Stuff
-        mainParseAdapter.loadObjects();
+        mainCategoryList = databaseAdapter.getMainCategories();
 
+        if (mainCategoryList.size() > 0) {
+            localMainCategoryAdapter = new LocalMainCategoryAdapter(getActivity().getLayoutInflater(),mainCategoryList,getActivity());
+            mainGridView.setAdapter(localMainCategoryAdapter);
+            mainGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    Log.i("Main Cat:"," Clicked");
+
+                    Intent intent = new Intent(getActivity(), ProductsActivity.class);
+                    CategoryModel categoryDetails = mainCategoryList.get(position);
+                    intent.putExtra("categoryDetails", categoryDetails);
+                    startActivity(intent);
+                    ((Activity) getActivity()).overridePendingTransition(0, 0);
+                }
+            });
+
+        }else {
+            //Main Query Adapter
+            mainParseAdapter = new ParseQueryAdapter<ParseObject>(getActivity(), "category");
+            mainParseAdapter.setTextKey("category_name");
+            mainParseAdapter.setImageKey("category_image");
+            mainCategoryAdapter = new MainCategoryAdapter(getActivity());
+            //Set up the grid
+            mainGridView.setAdapter(mainCategoryAdapter);
+            //Load Stuff
+            mainParseAdapter.loadObjects();
+            mainGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    Log.i("Parse Main Cat:"," Clicked");
+                    ParseObject parseItem = (ParseObject) parent.getItemAtPosition(position);
+                    String objectId = parseItem.getObjectId();
+                    String objectTitle = parseItem.getString("category_name");
+
+                    CategoryModel categoryDetails = new CategoryModel();
+                    categoryDetails.setObjectId(objectId);
+                    categoryDetails.setCategoryName(objectTitle);
+                    categoryDetails.setCategoryImage(parseItem.getParseFile("category_image").getUrl());
+
+
+                    Intent i = new Intent(getActivity(), ProductsActivity.class);
+                    i.putExtra("categoryDetails", categoryDetails);
+                    startActivity(i);
+                    ((Activity) getActivity()).overridePendingTransition(0, 0);
+
+                }
+            });
+            updateMainCategories();
+
+        }
 
         categoryList=databaseAdapter.getAllCategories();
         if (categoryList.size() > 0) {
@@ -220,6 +265,28 @@ public class DiscoverFragment extends Fragment {
                         categoryList.add(categoryDetails);
                     }
                     databaseAdapter.updateAllCategories(categoryList);
+                }
+            }
+        });
+    }
+    private void updateMainCategories(){
+
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("Category");
+        query.whereEqualTo("category_type","main");
+        query.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> categoryObjectList, ParseException e) {
+                if (e==null){
+                    ArrayList<CategoryModel> categoryList= new ArrayList<CategoryModel>();
+                    for (int i=0;i<categoryObjectList.size();i++){
+                        ParseObject category = categoryObjectList.get(i);
+                        CategoryModel categoryDetails = new CategoryModel();
+                        categoryDetails.setObjectId(category.getObjectId());
+                        categoryDetails.setCategoryName(category.getString("category_name"));
+                        categoryDetails.setCategoryImage(category.getParseFile("category_image").getUrl());
+                        categoryList.add(categoryDetails);
+                    }
+                    databaseAdapter.updateMainCategories(categoryList);
                 }
             }
         });

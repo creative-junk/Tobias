@@ -3,17 +3,24 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".fragments.RecentlyViewedFragment">
-
+    <Button
+        android:id="@+id/btnClearRecent"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:text="Clear Recently Viewed"
+        android:background="@color/colorPrimary"
+        android:textColor="@android:color/white"
+        android:layout_below="@+id/recentlyViewedProductsGrid"/>
     <GridView
         android:id="@+id/recentlyViewedProductsGrid"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:columnWidth="150dp"
         android:gravity="center"
         android:horizontalSpacing="1dp"
-        android:numColumns="auto_fit"
+        android:numColumns="3"
         android:stretchMode="columnWidth"
-        android:verticalSpacing="1dp" />
+        android:verticalSpacing="7dp" />
 
     <RelativeLayout
         android:id="@+id/loadingPanel"
@@ -44,14 +51,7 @@
             android:gravity="center"
             android:text="You have not yet Viewed any products." />
 
-        <Button
-            android:id="@+id/btnContinueShopping"
-            android:layout_width="200dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:background="@color/colorPrimary"
-            android:text="Continue Shopping"
-            android:textColor="@android:color/white" />
+
 
 
     </LinearLayout>

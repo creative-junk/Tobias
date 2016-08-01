@@ -6,7 +6,7 @@
     android:padding="6dp"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.crysoft.me.tobias.CartActivity"
-    tools:showIn="@layout/activity_wishlist">
+    tools:showIn="@layout/activity_cart">
 
     <TextView
         android:id="@+id/cartTitle"
@@ -127,6 +127,8 @@
             android:text="There are currently no items your shopping cart." />
 
         <Button
+            android:id="@+id/continueShopping"
+            android:onClick="continueShopping"
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"

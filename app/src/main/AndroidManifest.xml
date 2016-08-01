@@ -112,6 +112,14 @@
         <activity
             android:name=".SearchResultActivity"
             android:label="@string/title_activity_search_result"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".OrdersActivity"
+            android:label="@string/title_activity_orders"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".DealsActivity"
+            android:label="@string/title_activity_deals"
             android:theme="@style/AppTheme"></activity>
     </application>
 

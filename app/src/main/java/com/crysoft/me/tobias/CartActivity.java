@@ -44,6 +44,7 @@ import java.util.List;
      private EditText etQty;
     private LinearLayout llTotals;
     private Button checkoutBTn;
+    private Button continueShoppingBtn;
 
     String totalAmount;
 
@@ -96,6 +97,7 @@ import java.util.List;
             llTotals.setVisibility(View.GONE);
             checkoutBTn.setVisibility(View.GONE);
 
+
             Log.i("List is", "Empty");
         } else {
 
@@ -121,6 +123,9 @@ import java.util.List;
             });*/
         }
     }
+     private void continueShopping(View view){
+         finish();
+     }
 
     @Override
     public void onResume() {

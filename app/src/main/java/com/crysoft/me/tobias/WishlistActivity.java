@@ -37,6 +37,7 @@ public class WishlistActivity extends AppCompatActivity {
         setContentView(R.layout.activity_wishlist);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         //Setup the DB
         databaseAdapter = DBAdapter.getInstance(this);
@@ -80,6 +81,9 @@ public class WishlistActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+        }
         switch (item.getItemId()) {
 
             case R.id.action_cart:

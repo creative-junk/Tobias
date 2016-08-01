@@ -34,7 +34,8 @@
             android:textSize="10sp"
             android:text="Shop Now"
             android:textAllCaps="false"
-            android:layout_gravity="center"
+            android:layout_gravity="center_horizontal"
+            android:focusable="false"
             android:layout_marginTop="5dp"/>
 
 

@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 
@@ -33,6 +34,7 @@ public class FavouriteFragment extends Fragment {
     private ListView listView;
     private List<ProductsModel> productList;
     private LinearLayout emptyView;
+    private Button continueShoppingBtn;
 
     public FavouriteFragment() {
         // Required empty public constructor
@@ -46,12 +48,20 @@ public class FavouriteFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
         //Setup the DB
         databaseAdapter = DBAdapter.getInstance(getActivity());
+
         //Setup the layout
         listView = (ListView) getActivity().findViewById(R.id.wishList);
         emptyView = (LinearLayout) getActivity().findViewById(R.id.emptyWishList);
 
+        continueShoppingBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getActivity().finish();
+            }
+        });
 
         productList = databaseAdapter.getWishlist();
         if (productList.size() == 0) {

@@ -12,9 +12,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.GridView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.crysoft.me.tobias.ProductDetailsActivity;
 import com.crysoft.me.tobias.R;
@@ -34,6 +36,8 @@ public class RecentlyViewedFragment extends Fragment {
     private GridView gridView;
     private LinearLayout emptyView;
 
+    private Button btnRecentlyViewed;
+
     private List<ProductsModel> productList;
     private RecentlyViewedAdapter recentlyViewedAdapter;
 
@@ -49,12 +53,22 @@ public class RecentlyViewedFragment extends Fragment {
         //Setup the layout
         gridView = (GridView) getActivity().findViewById(R.id.recentlyViewedProductsGrid);
         emptyView = (LinearLayout) getActivity().findViewById(R.id.emptyView);
+        btnRecentlyViewed = (Button) getActivity().findViewById(R.id.btnClearRecent);
+
+        btnRecentlyViewed.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                clearRecentlyViewed();
+               // Toast.makeText(getActivity(), "Clicked", Toast.LENGTH_SHORT).show();
+            }
+        });
 
 
         productList = databaseAdapter.getRecentlyViewed();
         if (productList.size() == 0) {
             emptyView.setVisibility(View.VISIBLE);
             gridView.setVisibility(View.GONE);
+            btnRecentlyViewed.setVisibility(View.GONE);
             Log.i("List is", "Empty");
         } else {
 
@@ -72,7 +86,10 @@ public class RecentlyViewedFragment extends Fragment {
             });
         }
     }
-
+    private void clearRecentlyViewed(){
+        databaseAdapter.emptyRecentlyViewed();
+        recentlyViewedAdapter.notifyDataSetChanged();
+    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {

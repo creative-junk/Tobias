@@ -36,10 +36,19 @@ public class DBAdapter extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 2;
     //Table Names
     private static final String TABLE_CATEGORIES = "categories";
+    private static final String TABLE_MAIN_CATEGORIES = "main_categories";
     private static final String TABLE_SHOPPING_CART = "shopping_cart";
     private static final String TABLE_FAVOURITES = "favourites";
     private static final String TABLE_RECENT_SEARCHES = "search_table";
     private static final String TABLE_RECENTLY_VIEWED = "recently_viewed";
+    private static final String TABLE_SLIDESHOW ="slideshow_table";
+
+    //MAIN CATEGORIES table columns
+    private static final String KEY_MAIN_CATEGORY_ID = "_id";
+    private static final String KEY_MAIN_CATEGORY_OBJECT_ID = "main_category_id";
+    private static final String KEY_MAIN_CATEGORY_NAME = "main_category_name";
+    private static final String KEY_MAIN_CATEGORY_IMAGE = "main_category_image";
+
     //CATEGORIES table columns
     private static final String KEY_CATEGORY_ID ="_id";
     private static final String KEY_CATEGORY_OBJECT_ID ="category_id";
@@ -85,6 +94,8 @@ public class DBAdapter extends SQLiteOpenHelper {
     private static final String KEY_VIEWED_PRODUCT_STATUS = "product_status";
     private static final String KEY_VIEWED_STATUS = "cart_status";
 
+    //SLIDESHOW TABLE
+
 
     // lets create a method for giving back an instance of this class so there will only ever be one instance at a time. If we have one we just return it,otherwise we create a new one
     public static synchronized DBAdapter getInstance(Context context) {
@@ -110,6 +121,13 @@ public class DBAdapter extends SQLiteOpenHelper {
     //Initialize the Database AND CREATE our tables if needed
     @Override
     public void onCreate(SQLiteDatabase db) {
+        String CREATE_MAIN_CATEGORIES_TABLE = "CREATE TABLE " + TABLE_MAIN_CATEGORIES +
+                "(" +
+                KEY_MAIN_CATEGORY_ID + " INTEGER PRIMARY KEY," +
+                KEY_MAIN_CATEGORY_OBJECT_ID + " INTEGER," +
+                KEY_MAIN_CATEGORY_NAME + " TEXT," +
+                KEY_MAIN_CATEGORY_IMAGE + " TEXT" +
+                ")";
         String CREATE_CATEGORIES_TABLE ="CREATE TABLE " + TABLE_CATEGORIES +
                 "(" +
                 KEY_CATEGORY_ID + " INTEGER PRIMARY KEY," +
@@ -120,6 +138,7 @@ public class DBAdapter extends SQLiteOpenHelper {
                 KEY_CATEGORY_TYPE + " TEXT," +
                 KEY_CATEGORY_PARENT_ID + " TEXT" +
                 ")";
+
         String CREATE_SHOPPING_CART_TABLE = "CREATE TABLE " + TABLE_SHOPPING_CART +
                 "(" +
                 KEY_CART_ID + " INTEGER PRIMARY KEY," +
@@ -132,6 +151,7 @@ public class DBAdapter extends SQLiteOpenHelper {
                 KEY_CART_STATUS + " INTEGER," +
                 KEY_PRODUCT_QUANTITY + " INTEGER" +
                 ")";
+
         String CREATE_FAVOURITES_TABLE = "CREATE TABLE " + TABLE_FAVOURITES +
                 "(" +
                 KEY_FAVOURITES_ID + " INTEGER PRIMARY KEY," +
@@ -160,6 +180,7 @@ public class DBAdapter extends SQLiteOpenHelper {
                 KEY_VIEWED_PRODUCT_STATUS + " INTEGER," +
                 KEY_VIEWED_STATUS + " INTEGER" +
                 ")";
+        db.execSQL(CREATE_MAIN_CATEGORIES_TABLE);
         db.execSQL(CREATE_CATEGORIES_TABLE);
         db.execSQL(CREATE_SHOPPING_CART_TABLE);
         db.execSQL(CREATE_FAVOURITES_TABLE);
@@ -172,6 +193,7 @@ public class DBAdapter extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         if (oldVersion != newVersion) {
+            db.execSQL("DROP TABLE IF EXISTS " + TABLE_MAIN_CATEGORIES);
             db.execSQL("DROP TABLE IF EXISTS " + TABLE_SHOPPING_CART);
             db.execSQL("DROP TABLE IF EXISTS " + TABLE_FAVOURITES);
             db.execSQL("DROP TABLE IF EXISTS " + TABLE_CATEGORIES);
@@ -548,11 +570,12 @@ public class DBAdapter extends SQLiteOpenHelper {
     }
 
     //Clear the recently viewed Table
-    private boolean emptyRecentlyViewed() {
+    public boolean emptyRecentlyViewed() {
         SQLiteDatabase db = getWritableDatabase();
         String delSQLString = "DELETE FROM " + TABLE_RECENTLY_VIEWED + ";";
         db.execSQL(delSQLString);
         db.close();
+        Log.i("Empty recent",delSQLString);
         return true;
     }
 
@@ -612,6 +635,81 @@ public class DBAdapter extends SQLiteOpenHelper {
         db.close();
         return true;
     }
+
+    //Main Categories
+    public void updateMainCategories(ArrayList<CategoryModel> categories){
+        for (int i=0;i<categories.size();i++){
+            CategoryModel categoryDetails=categories.get(i);
+            insertOrUpdateMainCategory(categoryDetails);
+        }
+
+    }
+    public boolean insertOrUpdateMainCategory(CategoryModel categoryDetails){
+        SQLiteDatabase db = getWritableDatabase();
+        Boolean transactionSuccessful = false;
+
+        //As usual Wrap it in a transaction
+        db.beginTransaction();
+        try {
+            ContentValues values = new ContentValues();
+            values.put(KEY_MAIN_CATEGORY_OBJECT_ID, categoryDetails.getObjectId());
+            values.put(KEY_MAIN_CATEGORY_NAME, categoryDetails.getCategoryName());
+            values.put(KEY_MAIN_CATEGORY_IMAGE, categoryDetails.getCategoryImage());
+
+
+            //Let's try to update the Saved Product if it exists.
+            int rows = db.update(TABLE_MAIN_CATEGORIES, values, KEY_MAIN_CATEGORY_OBJECT_ID + "= ?", new String[]{categoryDetails.getObjectId()});
+
+            //Let's check if the update worked
+            if (rows == 1) {
+                //Ok, we have updated a Saved Product, we could probably get the Product updated at this point if we needed to
+                db.setTransactionSuccessful();
+                transactionSuccessful = true;
+
+            } else {
+                //No Such Product Here, insert it
+                db.insertOrThrow(TABLE_MAIN_CATEGORIES, null, values);
+                db.setTransactionSuccessful();
+                transactionSuccessful = true;
+            }
+        } catch (Exception e) {
+            Log.d(TAG, "Error trying to Update Main Categories");
+            transactionSuccessful = false;
+        } finally {
+            db.endTransaction();
+        }
+        return transactionSuccessful;
+
+    }
+    //Get MAIN CATEGORIES viewed
+    public List<CategoryModel> getMainCategories() {
+        List<CategoryModel> categoryList = new ArrayList<CategoryModel>();
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.query(TABLE_MAIN_CATEGORIES, new String[]{
+                KEY_MAIN_CATEGORY_ID, KEY_MAIN_CATEGORY_OBJECT_ID, KEY_MAIN_CATEGORY_NAME, KEY_MAIN_CATEGORY_IMAGE
+        }, null, null, null, null, null);
+        try {
+            if (cursor.moveToFirst()) {
+                do {
+                    CategoryModel categoryDetails = new CategoryModel();
+                    categoryDetails.setObjectId(cursor.getString(1));
+                    categoryDetails.setCategoryName(cursor.getString(2));
+                    categoryDetails.setCategoryImage(cursor.getString(3));
+                    categoryList.add(categoryDetails);
+                } while (cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            Log.d(TAG, "Error Retrieving Main categories");
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return categoryList;
+
+    }
+
+
     public void updateAllCategories(ArrayList<CategoryModel> categories){
         for (int i=0;i<categories.size();i++){
             CategoryModel categoryDetails=categories.get(i);
@@ -658,7 +756,7 @@ public class DBAdapter extends SQLiteOpenHelper {
         return transactionSuccessful;
 
     }
-    //Get RECENTLY viewed
+    //Get Categories
     public List<CategoryModel> getAllCategories() {
         List<CategoryModel> categoryList = new ArrayList<CategoryModel>();
         SQLiteDatabase db = getReadableDatabase();
@@ -686,6 +784,7 @@ public class DBAdapter extends SQLiteOpenHelper {
         return categoryList;
 
     }
+
 
 
 
