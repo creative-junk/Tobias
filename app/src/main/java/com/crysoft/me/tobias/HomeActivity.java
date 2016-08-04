@@ -103,6 +103,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         tvUserName = (TextView) headerLayout.findViewById(R.id.tvUserName);
 
         if (currentUser==null){
+            tvWelcomeMsg.setText("Sign In");
             tvWelcomeMsg.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

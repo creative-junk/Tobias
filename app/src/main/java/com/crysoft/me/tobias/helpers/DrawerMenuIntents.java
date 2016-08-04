@@ -5,10 +5,12 @@ import android.content.Intent;
 
 import com.crysoft.me.tobias.CartActivity;
 import com.crysoft.me.tobias.DealsActivity;
+import com.crysoft.me.tobias.FullscreenLoginActivity;
 import com.crysoft.me.tobias.HomeActivity;
 import com.crysoft.me.tobias.OrdersActivity;
 import com.crysoft.me.tobias.R;
 import com.crysoft.me.tobias.WishlistActivity;
+import com.parse.ParseUser;
 
 /**
  * Created by Maxx on 8/1/2016.
@@ -73,6 +75,13 @@ public class DrawerMenuIntents {
     }
 
     public static final void showSignIn(Context context) {
+        ParseUser currentUser = ParseUser.getCurrentUser();
+        if (currentUser!=null){
+            ParseUser.logOut();
+        }
+            Intent i = new Intent(context, FullscreenLoginActivity.class);
+            context.startActivity(i);
+
     }
 
 }

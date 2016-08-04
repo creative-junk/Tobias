@@ -8,5 +8,7 @@
         <attr name="metaButtonBarStyle" format="reference" />
         <attr name="metaButtonBarButtonStyle" format="reference" />
     </declare-styleable>
-
+    <declare-styleable name="CustomViewPager">
+        <attr name="swipeable" format="boolean" />
+    </declare-styleable>
 </resources>

@@ -370,6 +370,32 @@ public class DBAdapter extends SQLiteOpenHelper {
 
     }
 
+    //Get Cart Total
+    public int getUnformattedCartAmount() {
+        int amount = 0;
+
+
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.query(TABLE_SHOPPING_CART, new String[]{
+                KEY_CART_ID, KEY_PRODUCT_ID, KEY_PRODUCT_NAME, KEY_PRODUCT_PRICE, KEY_PRODUCT_IMAGE, KEY_PRODUCT_DESCRIPTION, KEY_PRODUCT_QUANTITY, KEY_PRODUCT_STATUS, KEY_CART_STATUS
+        }, null, null, null, null, null);
+        try {
+            if (cursor.moveToFirst()) {
+                do {
+                    amount = amount + Integer.valueOf(cursor.getString(3));
+                    amount = amount * Integer.valueOf(cursor.getString(6));
+                } while (cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            Log.d(TAG, "Error Retrieving Cart Items");
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return amount;
+
+    }
     //Get Number of Items in Cart
     public int getNumberOfItems() {
         int nrItems = 0;
@@ -568,7 +594,13 @@ public class DBAdapter extends SQLiteOpenHelper {
         return productList;
 
     }
-
+    public boolean emptyCart() {
+        SQLiteDatabase db = getWritableDatabase();
+        String delSQLString = "DELETE FROM " + TABLE_SHOPPING_CART + ";";
+        db.execSQL(delSQLString);
+        db.close();
+        return true;
+    }
     //Clear the recently viewed Table
     public boolean emptyRecentlyViewed() {
         SQLiteDatabase db = getWritableDatabase();

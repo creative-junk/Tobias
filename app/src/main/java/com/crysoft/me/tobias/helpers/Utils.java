@@ -15,6 +15,8 @@ import android.provider.MediaStore;
 import android.util.Base64;
 import android.widget.Toast;
 
+import com.parse.ParseUser;
+
 import java.io.ByteArrayOutputStream;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -28,6 +30,7 @@ import java.util.Date;
  * Created by Maxx on 7/20/2016.
  */
 public class Utils {
+
 
     public static final void showNoInternetConnection(Context context) {
         Toast.makeText(context, "No Internet Connection", Toast.LENGTH_SHORT).show();

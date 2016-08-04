@@ -43,7 +43,7 @@ import java.util.List;
     private TextView total;
      private EditText etQty;
     private LinearLayout llTotals;
-    private Button checkoutBTn;
+    private Button checkoutBtn;
     private Button continueShoppingBtn;
 
     String totalAmount;
@@ -75,13 +75,21 @@ import java.util.List;
         llTotals = (LinearLayout) findViewById(R.id.lltotals);
         etQty = (EditText) findViewById(R.id.etQty);
 
-        checkoutBTn = (Button) findViewById(R.id.btnCheckout);
+        checkoutBtn = (Button) findViewById(R.id.btnCheckout);
         subTotal = (TextView) findViewById(R.id.subTotal);
         total = (TextView) findViewById(R.id.tvTotal);
         cartTitle = (TextView) findViewById(R.id.cartTitle);
 
+        checkoutBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                gotoCheckout();
+            }
+        });
+
 
         populateList();
+
     }
     public void populateList(){
         productList = databaseAdapter.getCartItems();
@@ -95,7 +103,7 @@ import java.util.List;
             listView.setVisibility(View.GONE);
             cartTitle.setVisibility(View.GONE);
             llTotals.setVisibility(View.GONE);
-            checkoutBTn.setVisibility(View.GONE);
+            checkoutBtn.setVisibility(View.GONE);
 
 
             Log.i("List is", "Empty");
@@ -123,6 +131,10 @@ import java.util.List;
             });*/
         }
     }
+     private void gotoCheckout(){
+         Intent i = new Intent(this,CheckoutActivity.class);
+         this.startActivity(i);
+     }
      private void continueShopping(View view){
          finish();
      }

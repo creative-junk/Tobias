@@ -51,7 +51,7 @@ public class MainApplication extends Application {
 		 *
 		 * Learn more about the ParseUser class:
 		 * https://www.parse.com/docs/android_guide#users
-		 */
+		 *
         ParseUser.enableAutomaticUser();
 
 		/*

@@ -120,6 +120,11 @@
         <activity
             android:name=".DealsActivity"
             android:label="@string/title_activity_deals"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".CheckoutActivity"
+            android:label="@string/title_activity_checkout"
+            android:windowSoftInputMode="stateHidden"
             android:theme="@style/AppTheme"></activity>
     </application>
 

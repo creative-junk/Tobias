@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <RadioButton
+        android:id="@+id/rBtnRegularShipping"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Regular Shipping"
+        android:buttonTint="@color/colorAccent"
+        android:padding="12dp"
+        android:checked="true"/>
+    <LinearLayout
+        android:id="@+id/lLRegularContent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="10dp">
+        <TextView
+            android:id="@+id/tvShippingTiming"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Shipping Time: 2-8 Days"
+            style="@style/Base.TextAppearance.AppCompat.Small"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            style="@style/Base.TextAppearance.AppCompat.Small"
+            android:text="Fee: Ksh 200"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/Base.TextAppearance.AppCompat.Small"
+            android:text="**Shipping Fee will added to the Total Amount Payable"/>
+    </LinearLayout>
+
+</LinearLayout>
